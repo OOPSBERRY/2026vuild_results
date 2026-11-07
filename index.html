@@ -6,36 +6,62 @@
   <title>위로가 필요한 날 : 고요한 나의 책상</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="intro">
 
-  <!-- 3D 방 -->
-  <canvas id="scene" aria-hidden="true"></canvas>
-  <div class="vignette" aria-hidden="true"></div>
+  <!-- 화면 양옆 빈 곳을 채우는 흐린 배경 -->
+  <div class="backdrop" aria-hidden="true"></div>
 
-  <!-- 책상 위 물건 위에 얹히는 큰 버튼들 (위치는 3D에서 자동 계산) -->
-  <section class="objects" id="objects" aria-label="책상 위 물건들">
-    <a id="nbOpen" class="nb-open" target="_blank" rel="noopener" aria-label="이 프로그램 열어 보기"></a>
-  </section>
-
-  <main class="stage">
-    <header class="title">
-      <p class="title-small">위로가 필요한 날 :</p>
-      <h1>고요한 나의 책상</h1>
-    </header>
-
-  </main>
-
-  <!-- 처음 장면: 앉기 버튼 (의자는 3D 안에 있어요) -->
-  <div class="intro-ui" id="introUi">
-    <button class="sit-btn" id="sitBtn" type="button">의자에 앉기</button>
+  <!-- 책상 사진 + 그 위에 얹힌 누르는 영역들 -->
+  <div class="world" id="world">
+    <img class="bg" src="desk.jpg" alt="따뜻한 불빛이 켜진 밤 서재. 책상 위에 책, 스탠드, 펼친 공책, 찻잔, 화분이 놓여 있어요.">
+    <div class="spots" id="spots"></div>
+    <button class="spot spot-sit" id="sitBtn" type="button" aria-label="의자에 앉기"></button>
+    <button class="spot spot-help" id="helpBtn" type="button" aria-label="사용 안내"></button>
   </div>
+  <div class="floor-dark" aria-hidden="true"></div>
 
-  <script src="three.min.js"></script>
+  <!-- 처음 페이지 QR 버튼 -->
+  <button class="pill qr-btn" id="qrBtn" type="button">
+    <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path fill="currentColor" d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm10-2h2v2h-2v-2zm-2 2h2v2h-2v-2zm4 0h2v2h-2v-2zm-2 2h2v2h-2v-2zm2 2h2v2h-2v-2zm-4 0h2v2h-2v-2z"/></svg>
+    QR 코드
+  </button>
+
+  <!-- 물건을 누르면 나오는 설명 카드 -->
+  <aside class="card" id="card" hidden aria-live="polite">
+    <button class="card-x" id="cardX" type="button" aria-label="닫기">✕</button>
+    <p class="card-tag" id="cardTag"></p>
+    <h2 id="cardTitle"></h2>
+    <p class="card-desc" id="cardDesc"></p>
+    <div class="card-actions">
+      <a class="pill pill-go" id="cardGo" target="_blank" rel="noopener">열어 보기 →</a>
+      <span class="pill pill-soon" id="cardSoon">곧 열려요 🌙</span>
+    </div>
+  </aside>
+
+  <!-- QR 창 -->
+  <dialog class="modal" id="qrDlg">
+    <h2>휴대폰으로 찍어 보세요</h2>
+    <div class="qr-box" id="qrBox"></div>
+    <p class="qr-url" id="qrUrl"></p>
+    <button class="pill" id="qrClose" type="button">닫기</button>
+  </dialog>
+
+  <!-- 사용 안내 창 -->
+  <dialog class="modal" id="helpDlg">
+    <h2>이렇게 써 보세요</h2>
+    <ol class="steps">
+      <li><b>1</b> 아래의 <em>의자에 앉기</em>를 눌러요.</li>
+      <li><b>2</b> 책상 위 물건을 하나 눌러요.</li>
+      <li><b>3</b> 설명을 읽고 <em>열어 보기</em>를 눌러요.</li>
+    </ol>
+    <button class="pill" id="helpClose" type="button">알겠어요</button>
+  </dialog>
+
+  <script src="qrcode.min.js"></script>
   <script src="links.js"></script>
-  <script src="scene.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

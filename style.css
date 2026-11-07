@@ -1,83 +1,133 @@
 ﻿:root {
-  --cream: #f3e6cc;
+  --ar: 1.5988;               /* 사진 가로/세로 비율 (1586 / 992) */
   --amber: #f2b45a;
-  --ink: #3a2616;
-  --hand: "Nanum Pen Script", "Gowun Batang", cursive;
-  --serif: "Gowun Batang", "Batang", serif;
+  --cream: #f3e6cc;
+  --glass: rgba(22, 13, 8, .84);
+  --sans: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
 }
 * { box-sizing: border-box; margin: 0; }
-html, body { height: 100%; background: #0c0603; }
-body { font-family: var(--serif); color: var(--cream); overflow: hidden; }
+html, body { height: 100%; background: #140b06; }
+body { font-family: var(--sans); color: var(--cream); overflow: hidden; }
 button { font-family: inherit; color: inherit; cursor: pointer; }
 
-/* ---------- 3D 화면 ---------- */
-#scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; z-index: 0; }
-.vignette {
-  position: fixed; inset: 0; z-index: 1; pointer-events: none;
-  background: radial-gradient(ellipse at 50% 40%, transparent 45%, rgba(0,0,0,.6) 100%);
+/* 양옆 빈 곳: 같은 사진을 흐리게 */
+.backdrop {
+  position: fixed; inset: -40px; z-index: 0;
+  background: url("desk.jpg") center / cover no-repeat;
+  filter: blur(28px) brightness(.55);
 }
 
-/* ---------- 책상 위 물건 버튼 (위치는 scene.js가 계산) ---------- */
-.objects { position: fixed; inset: 0; z-index: 3; pointer-events: none; transition: opacity 1s ease .8s; }
-.obj {
-  position: absolute; transform: translate(-50%, -62%);
-  background: transparent; border: 0; border-radius: 18px; padding: 0;
-  pointer-events: auto; -webkit-tap-highlight-color: transparent;
+/* ---------- 사진 (화면에 다 들어오게) ---------- */
+.world {
+  position: fixed; z-index: 1; left: 50%; top: 50%;
+  width: min(100vw, calc(100dvh * var(--ar)));
+  height: min(100dvh, calc(100vw / var(--ar)));
+  transform: translate(-50%, -50%) scale(1);
+  transform-origin: 50% 10%;
+  transition: transform 1.9s cubic-bezier(.55, .05, .25, 1);
+  box-shadow: 0 0 60px rgba(0,0,0,.6);
 }
-.obj-label {
-  position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-  margin-top: 2px; white-space: nowrap;
-  font-family: var(--hand); font-size: clamp(1.5rem, 2.6vw, 2.2rem); line-height: 1;
-  text-shadow: 0 2px 8px #000, 0 0 3px #000;
-  transition: color .3s, transform .3s;
+.bg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; user-select: none; -webkit-user-drag: none; }
+body.seated .world { transform: translate(-50%, -50%) scale(1.14); }
+
+/* 카드가 뜨면 사진이 위로 살짝 올라가서 물건이 안 가려져요 */
+body.card-open .world { transform: translate(-50%, calc(-50% - 11vh)) scale(1.14); }
+
+/* 앉으면 의자가 아래로 사라지는 느낌 */
+.floor-dark {
+  position: fixed; z-index: 2; left: 0; right: 0; bottom: 0; height: 26vh; pointer-events: none;
+  background: linear-gradient(transparent, rgba(16, 9, 5, .96) 70%);
+  opacity: 0; transition: opacity 1.4s ease .5s;
 }
-.obj:hover .obj-label, .obj:focus-visible .obj-label { transform: translateX(-50%) translateY(-3px); }
-.obj:focus-visible { outline: 3px dashed rgba(242,180,90,.8); outline-offset: 2px; }
-.obj.on .obj-label { color: var(--amber); }
+body.seated .floor-dark { opacity: 1; }
 
-/* ---------- 제목 + 공책 (화면 위에 얹기) ---------- */
-.stage {
-  position: fixed; inset: 0; z-index: 2; pointer-events: none;
-  display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-  padding: 2.2vh 3vw 3vh;
+/* ---------- 사진 위에 얹은 누르는 영역 ---------- */
+.spot {
+  position: absolute; background: transparent; border: 1.5px solid transparent; border-radius: 18px;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color .25s, box-shadow .25s, background .25s;
 }
-.stage > * { pointer-events: auto; }
-.title { text-align: center; text-shadow: 0 2px 12px rgba(0,0,0,.9); transition: transform 1.2s ease; pointer-events: none; }
-.title-small { font-size: clamp(1rem, 1.8vw, 1.4rem); color: var(--amber); letter-spacing: .1em; }
-.title h1 { font-weight: 700; font-size: clamp(1.7rem, 3.4vw, 2.6rem); letter-spacing: .06em; }
-
-.nb-open {
-  position: absolute; display: none; pointer-events: auto; border-radius: 40px;
-  background: transparent; cursor: pointer;
+.spot:hover, .spot:focus-visible {
+  border-color: rgba(242, 180, 90, .7);
+  background: radial-gradient(ellipse at 50% 60%, rgba(255, 190, 100, .14), transparent 72%);
+  box-shadow: 0 0 26px rgba(255, 180, 90, .3);
+  outline: none;
 }
-.nb-open:focus-visible { outline: 3px dashed rgba(242,180,90,.9); outline-offset: 3px; }
-
-/* ---------- 처음 장면 ---------- */
-.intro-ui {
-  position: fixed; inset: 0; z-index: 5; display: flex; align-items: flex-end; justify-content: center;
-  padding-bottom: 12vh; pointer-events: none;
+.spot.on {
+  border-color: var(--amber);
+  background: radial-gradient(ellipse at 50% 60%, rgba(255, 190, 100, .2), transparent 72%);
+  box-shadow: 0 0 34px rgba(255, 180, 90, .5);
 }
-.sit-btn {
-  pointer-events: auto;
-  min-height: 78px; padding: 16px 48px; border-radius: 48px; border: 0;
-  font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 700; color: #2c1707;
-  background: linear-gradient(#f1b660, #c8801f);
-  box-shadow: 0 8px 0 #7e4a12, 0 14px 30px rgba(0,0,0,.6), 0 0 40px rgba(255,180,90,.4);
-  animation: breathe 2.8s ease-in-out infinite;
-  transition: opacity .6s;
+.spot-sit, .spot-help { border-radius: 40px; }
+.spot-help { border-radius: 10px; }
+body.seated .spot-sit { opacity: 0; pointer-events: none; }
+.spots { position: absolute; inset: 0; pointer-events: none; }
+.spots .spot { pointer-events: auto; }
+
+/* ---------- 버튼 모양 (사진 속 버튼과 같은 느낌) ---------- */
+.pill {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 60px; padding: 12px 30px; border-radius: 40px;
+  font-size: 1.2rem; font-weight: 500; letter-spacing: .02em; text-decoration: none;
+  color: var(--amber); background: rgba(24, 14, 8, .8);
+  border: 1.5px solid rgba(242, 180, 90, .55);
+  backdrop-filter: blur(6px);
+  transition: background .2s, transform .15s;
 }
-.sit-btn:active { transform: translateY(5px); box-shadow: 0 3px 0 #7e4a12; }
-@keyframes breathe { 50% { box-shadow: 0 8px 0 #7e4a12, 0 14px 30px rgba(0,0,0,.6), 0 0 70px rgba(255,180,90,.7); } }
+.pill:hover { background: rgba(60, 36, 16, .9); }
+.pill:active { transform: translateY(2px); }
+.pill-go { background: linear-gradient(#e9a64a, #c47a22); color: #2c1707; font-weight: 700; border-color: transparent; font-size: 1.35rem; }
+.pill-go:hover { background: linear-gradient(#f0b25a, #d08428); }
+.pill-soon { color: #bfae8c; border-color: rgba(191, 174, 140, .4); cursor: default; }
+.pill:focus-visible { outline: 3px dashed rgba(242, 180, 90, .9); outline-offset: 3px; }
 
-body.intro .objects { opacity: 0; }
-body.intro .objects .obj { pointer-events: none; }
-body.intro .stage { justify-content: flex-start; padding-top: 6vh; }
-body.intro .title { transform: scale(1.35); transform-origin: top center; }
+.qr-btn { position: fixed; z-index: 6; right: 3vw; bottom: 3.5vh; }
 
-body.seated .sit-btn { opacity: 0; pointer-events: none; }
-body.seated .intro-ui { z-index: 0; }
+/* ---------- 설명 카드 ---------- */
+.card {
+  position: fixed; z-index: 7; left: 50%; bottom: 3.5vh;
+  width: min(720px, 94vw); padding: 26px 32px 28px;
+  background: var(--glass); border: 1px solid rgba(242, 180, 90, .35); border-radius: 24px;
+  backdrop-filter: blur(10px); box-shadow: 0 20px 60px rgba(0, 0, 0, .65);
+  transform: translate(-50%, 30px); opacity: 0;
+  transition: transform .4s ease, opacity .4s ease;
+}
+.card[hidden] { display: none; }
+.card.show { transform: translate(-50%, 0); opacity: 1; }
+.card-x {
+  position: absolute; right: 14px; top: 12px; width: 48px; height: 48px; border-radius: 50%;
+  background: transparent; border: 0; font-size: 1.3rem; color: #cdbb98;
+}
+.card-x:hover { color: var(--amber); }
+.card-tag { color: var(--amber); font-size: 1.05rem; letter-spacing: .04em; }
+.card h2 { font-size: clamp(1.8rem, 3.4vw, 2.4rem); font-weight: 500; margin: 6px 0 10px; }
+.card-desc { font-size: clamp(1.15rem, 1.9vw, 1.4rem); line-height: 1.7; font-weight: 300; margin-bottom: 20px; word-break: keep-all; }
+.card-actions { display: flex; gap: 12px; }
+.card [hidden] { display: none; }
 
+/* ---------- 창 (QR, 사용 안내) ---------- */
+.modal {
+  margin: auto; padding: 30px 36px; border-radius: 26px; text-align: center;
+  background: var(--glass); color: var(--cream);
+  border: 1px solid rgba(242, 180, 90, .4); box-shadow: 0 24px 80px rgba(0, 0, 0, .75);
+  width: min(460px, 92vw);
+}
+.modal::backdrop { background: rgba(8, 4, 2, .7); backdrop-filter: blur(4px); }
+.modal h2 { font-size: 1.7rem; font-weight: 500; margin-bottom: 18px; }
+.qr-box { width: min(300px, 70vw); aspect-ratio: 1; margin: 0 auto 14px; background: #fff; border-radius: 14px; padding: 8px; }
+.qr-box svg { width: 100%; height: 100%; display: block; }
+.qr-url { font-size: .95rem; color: #bfae8c; word-break: break-all; margin-bottom: 20px; font-weight: 300; }
+.steps { list-style: none; padding: 0; text-align: left; display: grid; gap: 14px; margin-bottom: 24px; font-size: 1.3rem; line-height: 1.5; }
+.steps b {
+  display: inline-grid; place-items: center; width: 38px; height: 38px; margin-right: 10px; border-radius: 50%;
+  background: var(--amber); color: #2c1707;
+}
+.steps em { color: var(--amber); font-style: normal; font-weight: 700; }
+
+@media (max-width: 720px) {
+  .qr-btn { bottom: 2vh; }
+  .card { padding: 20px 20px 22px; }
+}
 @media (prefers-reduced-motion: reduce) {
   * { transition-duration: .01s !important; transition-delay: 0s !important; animation: none !important; }
 }
-
