@@ -76,6 +76,7 @@ function buildObjects() {
     b.setAttribute("aria-label", item.name + " (" + s.label + ")");
     place(b, s.box);
     b.addEventListener("click", () => {
+      if (i === 0) { window.openBookmark && window.openBookmark(); return; }   // 책갈피 찾기
       const wait = seated ? 0 : 900;   // 안 앉았으면 먼저 앉고 열어요
       sit();
       setTimeout(() => { if (window.DeskPanel) DeskPanel.open(i, b); }, wait);
@@ -84,6 +85,18 @@ function buildObjects() {
   });
 }
 buildObjects();
+
+// 사진에 글자로 박힌 옛 이름 위에, links.js의 이름을 이름표로 덮어요 [가운데 x, 가운데 y] (사진 기준)
+const LABEL_POS = [[247, 465], [798, 472], [1148, 470], [1367, 470]];
+LABEL_POS.forEach((pos, i) => {
+  if (!links[i]) return;
+  const t = document.createElement("span");
+  t.className = "spot-label";
+  t.textContent = links[i].name;
+  t.style.left = (pos[0] / IMG_W) * 100 + "%";
+  t.style.top = (pos[1] / IMG_H) * 100 + "%";
+  objectsBox.appendChild(t);
+});
 
 // ---------- 도구 패널: 실제 물건의 상세 활동 메뉴 ----------
 (() => {
@@ -100,10 +113,10 @@ buildObjects();
   let seconds = 60;
 
   const toolMeta = [
-    { kicker: "CLASSIC READING", title: "고전 읽기", lead: "한 권의 고전과 나의 오늘을 조용히 연결해 봐요.", image: "assets/book-little-prince-hero.png" },
-    { kicker: "TODAY'S FEELING", title: "오늘의 마음", lead: "지금의 마음을 하나 고르고, 잠시 그 감정 곁에 있어 봐요.", image: "assets/tool-mood.png" },
-    { kicker: "A SMALL PAUSE", title: "쉬어가기", lead: "눈과 어깨를 쉬게 하는 짧은 1분을 시작해요.", image: "assets/tool-rest.png" },
-    { kicker: "ONE LINE JOURNAL", title: "한 줄 쓰기", lead: "오늘의 나를 한 줄로 남기면, 작은 생각도 자랄 자리를 얻어요.", image: "assets/tool-journal.png" }
+    { kicker: "BOOKMARK", title: "책갈피 찾기", lead: "나에게 어울리는 책갈피를 찾아봐요.", image: "assets/tool-book.png" },
+    { kicker: "LET'S READ", title: "독서하러 가자", lead: "한 권의 책과 오늘의 나를 조용히 연결해 봐요.", image: "assets/book-little-prince-hero.png" },
+    { kicker: "A DIFFERENT EXPERIENCE", title: "색다른 경험", lead: "책 밖으로 나가는 색다른 경험을 해 봐요.", image: "assets/tool-rest.png" },
+    { kicker: "MADE BY", title: "만든 사람", lead: "이 책상을 함께 만든 사람들이에요.", image: "assets/tool-journal.png" }
   ];
 
   const escapeHtml = (value) => String(value).replace(/[&<>\"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" })[char]);
@@ -139,9 +152,9 @@ buildObjects();
   function renderBookList() {
     panel.dataset.view = "book-list";
     content.innerHTML = `
-      <p class="tool-kicker">${toolMeta[0].kicker}</p>
-      <h2 class="tool-title" id="toolTitle">${toolMeta[0].title}</h2>
-      <p class="tool-lead">${toolMeta[0].lead}</p>
+      <p class="tool-kicker">${toolMeta[1].kicker}</p>
+      <h2 class="tool-title" id="toolTitle">${toolMeta[1].title}</h2>
+      <p class="tool-lead">${toolMeta[1].lead}</p>
       <button class="book-choice" type="button" id="littlePrinceChoice">
         <img src="assets/book-little-prince-cover.png" alt="어린 왕자 표지">
         <span><strong>어린 왕자</strong><span>앙투안 드 생텍쥐페리<br>관계와 책임을 천천히 읽는 시간</span></span>
@@ -218,14 +231,33 @@ buildObjects();
     bindCommon();
     focusPanelHeading();
   }
+  function renderLink(index) {
+    panel.dataset.view = "link";
+    const m = toolMeta[index];
+    content.innerHTML = `
+      <p class="tool-kicker">${m.kicker}</p><h2 class="tool-title" id="toolTitle">${m.title}</h2><p class="tool-lead">${escapeHtml(current().desc || m.lead)}</p>
+      <div class="tool-actions">${action()}${deskButton()}</div>`;
+    bindCommon();
+    focusPanelHeading();
+  }
+  function renderCredits() {
+    panel.dataset.view = "credits";
+    const m = toolMeta[3];
+    const rows = (window.DESK_CREDITS || []).map((c) => `<li><span>${escapeHtml(c.role)}</span><strong>${escapeHtml(c.name)}</strong></li>`).join("");
+    content.innerHTML = `
+      <p class="tool-kicker">${m.kicker}</p><h2 class="tool-title" id="toolTitle">${m.title}</h2><p class="tool-lead">${m.lead}</p>
+      <section class="tool-card"><h3>함께 만든 사람들</h3><ul class="credits">${rows}</ul></section>
+      <div class="tool-actions">${deskButton()}</div>`;
+    bindCommon();
+    focusPanelHeading();
+  }
   function render(index) {
     clearInterval(timerId); timerId = 0; seconds = 60;
     const meta = toolMeta[index];
     hero.style.backgroundImage = `url('${meta.image}')`;
-    if (index === 0) return renderBookList();
-    if (index === 1) return renderMood();
-    if (index === 2) return renderRest();
-    renderJournal();
+    if (index === 1) return renderBookList();
+    if (index === 2) return renderLink(2);
+    renderCredits();
   }
   window.DeskPanel = {
     open(index, trigger) {

@@ -318,3 +318,16 @@ body.tool-open .world { filter: brightness(.7); }
 .help-steps { list-style: none; margin: 0 0 22px; padding: 0; text-align: left; display: grid; gap: 12px; font-size: 1.15rem; line-height: 1.5; }
 .help-steps b { background: var(--brass-500); border-radius: 50%; color: var(--espresso-950); display: inline-grid; height: 34px; margin-right: 10px; place-items: center; width: 34px; }
 .help-steps em { color: var(--brass-300); font-style: normal; font-weight: 700; }
+
+/* 사진 속 옛 이름을 덮는 새 이름표 (글자는 links.js에서 와요) */
+.world { container-type: inline-size; }
+.spot-label {
+  align-items: center; background: rgba(20,13,10,.94); border: 1px solid rgba(214,189,131,.5); border-radius: 999px; box-shadow: 0 4px 14px rgba(0,0,0,.45);
+  color: var(--ivory-100); display: inline-flex; font: 600 1.32cqw var(--sans); justify-content: center; letter-spacing: -.01em; min-height: 2.5cqw; min-width: 9.8cqw;
+  padding: .3cqw 1.2cqw; pointer-events: none; position: absolute; transform: translate(-50%, -50%); white-space: nowrap; z-index: 1;
+}
+.credits { display: grid; gap: 10px; list-style: none; margin: 8px 0 0; padding: 0; }
+.credits li { align-items: baseline; border-bottom: 1px solid rgba(243,235,221,.12); display: flex; gap: 14px; justify-content: space-between; padding: 8px 0; }
+.credits li:last-child { border-bottom: 0; }
+.credits span { color: var(--ivory-300); font-size: .9rem; }
+.credits strong { font-size: 1.05rem; font-weight: 600; }

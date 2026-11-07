@@ -8,30 +8,30 @@
 window.DESK_LINKS = [
   {
     object: "book",
-    name: "고전 읽기",
+    name: "책갈피 찾기",
     teacher: "○○ 선생님",
-    desc: "오래된 책 속 한 문장을 오늘의 내 마음에 가만히 비춰 봐요.",
+    desc: "나에게 어울리는 책갈피를 찾고, 오늘의 책을 만나 봐요.",
     url: ""
   },
   {
     object: "lamp",
-    name: "오늘의 마음",
+    name: "독서하러 가자",
     teacher: "△△ 선생님",
-    desc: "지금 내 기분은 어떤 색일까요? 스탠드 불빛 아래에서 마음을 골라 봐요.",
+    desc: "한 권의 책과 함께 오늘의 독서를 시작해요.",
     url: ""
   },
   {
     object: "mug",
-    name: "쉬어가기",
+    name: "색다른 경험",
     teacher: "□□ 선생님",
-    desc: "따뜻한 차 한 잔처럼, 잠깐 숨을 고르는 시간이에요.",
+    desc: "책 밖으로 나가는 색다른 경험을 해 봐요.",
     url: ""
   },
   {
     object: "plant",
-    name: "한 줄 쓰기",
+    name: "만든 사람",
     teacher: "◇◇ 선생님",
-    desc: "오늘의 나를 한 줄로 적어 봐요. 작은 화분처럼 조금씩 자라요.",
+    desc: "이 책상을 함께 만든 사람들을 소개해요.",
     url: ""
   }
 ];
@@ -61,3 +61,10 @@ window.BOOK_RESULT = {
 // 🔁 설문 링크를 같은 창에서 열기 (true 권장). 설문이 끝나면 우리 사이트로 돌아오게 하려면 true로 두세요.
 // 설문 도구의 "완료 후 이동 주소"에 아래 주소를 넣어요:  ○○.onpod.ai/?result=1
 window.BOOKMARK_SAME_TAB = true;
+
+// 👥 "만든 사람" 패널에 나오는 명단 (이름은 여기만 고치면 돼요)
+window.DESK_CREDITS = [
+  { role: "기획", name: "○○ 선생님" },
+  { role: "책갈피 찾기", name: "△△ 선생님" },
+  { role: "디자인", name: "□□ 선생님" }
+];
