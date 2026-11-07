@@ -419,3 +419,7 @@ a.tool-choice:focus-visible { outline: 3px solid var(--ivory-100); outline-offse
 .tool-choice > span { color: var(--ivory-300); display: block; font-size: .95rem; line-height: 1.6; word-break: keep-all; }
 .tool-choice em { color: var(--brass-300); display: block; font-size: .82rem; font-style: normal; font-weight: 600; margin-top: 6px; }
 .tool-choice--soon { border-style: dashed; cursor: default; }
+
+/* 오른쪽 아래 호스팅 배지(예: Netlify)에 안 가려지게 위로 올려요 */
+.qr-btn, .bm-btn { bottom: calc(clamp(16px, 3vh, 32px) + 56px); }
+@media (max-width: 640px) { .qr-btn, .bm-btn { bottom: 70px; } }
