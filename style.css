@@ -441,3 +441,7 @@ a.tool-choice:focus-visible { outline: 3px solid var(--ivory-100); outline-offse
 body.doors-open .entry-gate__content { opacity: 0; pointer-events: none; transition: opacity 120ms ease; visibility: hidden; }
 .entry-gate__door { transition: transform .9s cubic-bezier(.2,.8,.1,1); }
 .entry-gate { transition: opacity 240ms var(--ease), background 350ms var(--ease), visibility 0s linear 1s; }
+
+/* "다독 다독" 크기를 줄여요 */
+.gate-big { font-size: 1.3em; }
+@media (max-width: 640px) { .gate-big { font-size: 1.2em; } }
