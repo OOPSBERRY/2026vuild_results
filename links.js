@@ -68,3 +68,10 @@ window.DESK_CREDITS = [
   { role: "책갈피 찾기", name: "△△ 선생님" },
   { role: "디자인", name: "□□ 선생님" }
 ];
+
+// 📖 "독서하러 가자" 공책에 손글씨로 써지는 활동 (제목을 누르면 url로 이동해요. 링크는 나중에 여기에 넣어요)
+window.READING_ACTIVITIES = [
+  { title: "Book生극장", desc: "나의 선택이 이야기에 어떤 영향을 줄까?", url: "" },
+  { title: "고전네컷", desc: "현대적 관점으로 이야기 이어쓰기", url: "" },
+  { title: "모두의 고전", desc: "", url: "" }
+];

@@ -4,6 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>위로가 필요한 날 : 고요한 나의 책상</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="intro">
@@ -17,6 +20,15 @@
     <button class="spot spot-help" id="helpBtn" type="button" aria-label="사용 안내"></button>
   </div>
   <div class="floor-dark" aria-hidden="true"></div>
+
+  <!-- 독서하러 가자: 공책에 가까이 다가가면 보여요 -->
+  <div class="notebook-view" id="nbView" role="dialog" aria-label="독서하러 가자: 활동 고르기" hidden>
+    <button class="nb-back" id="nbBack" type="button">← 책상으로 돌아가기</button>
+    <div class="nb-spread">
+      <section class="nb-page nb-left" id="nbLeft"></section>
+      <section class="nb-page nb-right" id="nbRight"></section>
+    </div>
+  </div>
 
   <section class="entry-gate" id="entryGate" aria-labelledby="entryTitle" aria-modal="true" role="dialog">
     <div class="entry-gate__doors" aria-hidden="true">

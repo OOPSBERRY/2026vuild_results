@@ -77,6 +77,7 @@ function buildObjects() {
     place(b, s.box);
     b.addEventListener("click", () => {
       if (i === 0) { window.openBookmark && window.openBookmark(); return; }   // 책갈피 찾기
+      if (i === 1) { window.openReading && window.openReading(b); return; }      // 독서하러 가자 → 공책 가까이
       const wait = seated ? 0 : 900;   // 안 앉았으면 먼저 앉고 열어요
       sit();
       setTimeout(() => { if (window.DeskPanel) DeskPanel.open(i, b); }, wait);
@@ -342,4 +343,87 @@ LABEL_POS.forEach((pos, i) => {
 
   // 어두운 바깥을 누르면 닫기
   [bm].forEach((d) => d.addEventListener("click", (e) => { if (e.target === d) d.close(); }));
+})();
+
+
+// ---------- 독서하러 가자: 공책에 더 가까이 다가가서, 손글씨로 쓰인 활동 3가지 ----------
+(() => {
+  const view = document.getElementById("nbView");
+  const left = document.getElementById("nbLeft");
+  const right = document.getElementById("nbRight");
+  const back = document.getElementById("nbBack");
+  let trigger = null;
+  let timers = [];
+
+  function entry(a, n) {
+    const wrap = document.createElement("div");
+    wrap.className = "hw-item";
+    wrap.style.setProperty("--n", n);
+    const num = document.createElement("span");
+    num.className = "hw-num";
+    num.textContent = n + ".";
+    const title = document.createElement(a.url ? "a" : "span");
+    title.className = "hw-title" + (a.url ? "" : " hw-nolink");
+    title.textContent = a.title;
+    if (a.url) { title.href = a.url; title.target = "_blank"; title.rel = "noopener"; }
+    else { title.tabIndex = 0; }
+    const head = document.createElement("div");
+    head.className = "hw-line";
+    head.append(num, title);
+    if (!a.url) {
+      const soon = document.createElement("small");
+      soon.className = "hw-soon";
+      soon.textContent = "곧 열려요";
+      head.append(soon);
+    }
+    wrap.append(head);
+    if (a.desc) {
+      const d = document.createElement("p");
+      d.className = "hw-desc";
+      d.textContent = "(" + a.desc + ")";
+      wrap.append(d);
+    }
+    return wrap;
+  }
+
+  function render() {
+    const list = window.READING_ACTIVITIES || [];
+    left.replaceChildren();
+    right.replaceChildren();
+    const head = document.createElement("h2");
+    head.className = "hw-head";
+    head.textContent = "독서하러 가자";
+    const sub = document.createElement("p");
+    sub.className = "hw-sub";
+    sub.textContent = "오늘 해 볼 활동을 골라 봐요";
+    left.append(head, sub);
+    list.forEach((a, i) => (i === 0 ? left : right).append(entry(a, i + 1)));
+  }
+
+  function open(fromEl) {
+    if (!view.hidden && view.classList.contains("show")) return;
+    trigger = fromEl || null;
+    sit();                                   // 아직 안 앉았으면 먼저 앉아요
+    document.body.classList.add("reading");  // 사진이 공책 쪽으로 다가가요
+    world.inert = true;
+    render();
+    view.hidden = false;
+    timers.push(setTimeout(() => view.classList.add("show"), 1000));   // 다가간 뒤 필기가 써져요
+    timers.push(setTimeout(() => back.focus({ preventScroll: true }), 1200));
+  }
+  function close() {
+    timers.forEach(clearTimeout);
+    timers = [];
+    view.classList.remove("show");
+    document.body.classList.remove("reading");
+    timers.push(setTimeout(() => {
+      view.hidden = true;
+      world.inert = false;
+      if (trigger) trigger.focus({ preventScroll: true });
+    }, 600));
+  }
+  window.openReading = open;
+  back.addEventListener("click", close);
+  view.addEventListener("click", (e) => { if (e.target === view) close(); });   // 바깥을 누르면 돌아가요
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !view.hidden && !document.querySelector("dialog[open]")) close(); });
 })();

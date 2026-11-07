@@ -331,3 +331,66 @@ body.tool-open .world { filter: brightness(.7); }
 .credits li:last-child { border-bottom: 0; }
 .credits span { color: var(--ivory-300); font-size: .9rem; }
 .credits strong { font-size: 1.05rem; font-weight: 600; }
+
+/* ---------- 독서하러 가자: 공책 가까이 + 손글씨 ---------- */
+.world { transition: transform 1.9s cubic-bezier(.55,.05,.25,1), transform-origin 1.9s cubic-bezier(.55,.05,.25,1), filter 600ms var(--ease); }
+body.reading .world {
+  transform: translate(calc(-50% - 1.2%), calc(-50% - 12%)) scale(2.6); transform-origin: 51.2% 62%; filter: brightness(.6);
+}
+body.reading .floor-dark { opacity: 0; }
+body.reading .spot-sit { opacity: 0; pointer-events: none; }
+
+.notebook-view { align-items: center; display: grid; inset: 0; justify-items: center; opacity: 0; pointer-events: none; position: fixed; transition: opacity 500ms var(--ease); z-index: 8; }
+.notebook-view[hidden] { display: none; }
+.notebook-view.show { opacity: 1; pointer-events: auto; }
+.nb-back {
+  background: rgba(27,18,15,.86); border: 1px solid rgba(214,189,131,.7); border-radius: 999px; color: var(--ivory-100); cursor: pointer;
+  font: 650 1rem var(--sans); left: clamp(16px, 3vw, 44px); min-height: 48px; padding: 10px 20px; position: absolute; top: clamp(16px, 3vh, 36px);
+}
+.nb-back:hover { background: var(--walnut-700); }
+.nb-back:focus-visible { outline: 3px solid var(--ivory-100); outline-offset: 3px; }
+
+.nb-spread {
+  --hand: "Nanum Pen Script", "Gaegu", "Segoe Print", cursive;
+  background: linear-gradient(90deg, #efe3c9, #f6ecd6 48%, #e6d8b9 50%, #f6ecd6 52%, #efe3c9);
+  border-radius: 6px; box-shadow: 0 30px 80px rgba(0,0,0,.7), 0 0 0 1px rgba(120,90,50,.35);
+  color: #2a1c12; display: grid; font-family: var(--hand); grid-template-columns: 1fr 1fr; min-height: min(58vh, 440px); position: relative; width: min(90vw, 1020px);
+}
+.nb-spread::before { /* 가운데 접힌 곳 */
+  background: linear-gradient(90deg, transparent, rgba(80,55,25,.28) 48%, rgba(80,55,25,.4) 50%, rgba(80,55,25,.28) 52%, transparent);
+  bottom: 0; content: ""; left: 46%; pointer-events: none; position: absolute; top: 0; width: 8%;
+}
+.nb-page {
+  background: repeating-linear-gradient(180deg, transparent 0 41px, rgba(110,85,55,.26) 41px 42px);
+  background-position: 0 30px; padding: 30px clamp(20px, 4vw, 48px) 24px;
+}
+.hw-head { font-size: clamp(2.2rem, 4.6vw, 3.3rem); font-weight: 400; letter-spacing: .02em; line-height: 42px; margin-bottom: 4px; }
+.hw-sub { color: #6a4f30; font-size: clamp(1.3rem, 2.4vw, 1.7rem); line-height: 42px; margin-bottom: 42px; }
+.hw-item { margin-bottom: 42px; }
+.hw-line { align-items: baseline; display: flex; flex-wrap: wrap; gap: 10px; line-height: 42px; }
+.hw-num { color: #8a2f2a; font-size: clamp(1.8rem, 3.2vw, 2.4rem); }
+.hw-title { color: #2a1c12; font-size: clamp(2rem, 3.8vw, 2.8rem); letter-spacing: .02em; text-decoration: underline wavy #8a2f2a; text-decoration-thickness: 1.5px; text-underline-offset: 6px; }
+a.hw-title { cursor: pointer; }
+a.hw-title::after { content: " ↗"; color: #8a2f2a; font-size: .7em; }
+a.hw-title:hover, a.hw-title:focus-visible { background: rgba(138,47,42,.12); outline: none; }
+a.hw-title:focus-visible { outline: 2px dashed #8a2f2a; outline-offset: 4px; }
+.hw-nolink { cursor: default; }
+.hw-soon { color: #8a7a62; font-family: var(--sans); font-size: .72rem; font-weight: 600; letter-spacing: .04em; }
+.hw-desc { color: #4a3624; font-size: clamp(1.4rem, 2.6vw, 1.85rem); line-height: 42px; padding-left: 2.2rem; word-break: keep-all; }
+/* 한 줄씩 써지는 느낌 */
+.notebook-view.show .hw-head, .notebook-view.show .hw-sub, .notebook-view.show .hw-line, .notebook-view.show .hw-desc { animation: hw-write .9s ease-out both; }
+.notebook-view.show .hw-sub { animation-delay: .5s; }
+.notebook-view.show .hw-item { --d: calc(var(--n) * .6s); }
+.notebook-view.show .hw-line { animation-delay: calc(.9s + var(--d)); }
+.notebook-view.show .hw-desc { animation-delay: calc(1.3s + var(--d)); }
+@keyframes hw-write { from { clip-path: inset(-6px 100% -6px 0); } to { clip-path: inset(-6px -8px -6px 0); } }
+@media (max-width: 700px) {
+  .nb-spread { grid-template-columns: 1fr; max-height: 80dvh; overflow-y: auto; width: 92vw; }
+  .nb-spread::before { display: none; }
+  .nb-back { top: 12px; left: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .notebook-view.show * { animation: none !important; } }
+
+/* 공책을 볼 때는 확대된 이름표를 숨겨요 */
+.spot-label { transition: opacity 400ms var(--ease); }
+body.reading .spot-label { opacity: 0; }
