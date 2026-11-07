@@ -445,3 +445,8 @@ body.doors-open .entry-gate__content { opacity: 0; pointer-events: none; transit
 /* "다독 다독" 크기를 줄여요 */
 .gate-big { font-size: 1.3em; }
 @media (max-width: 640px) { .gate-big { font-size: 1.2em; } }
+
+/* 대문 문구: 더 작게, 더 따뜻한 아이보리색으로 */
+.entry-gate h2 { color: #ecdcb8; font-size: clamp(1.5rem, 2.8vw, 2.2rem); }
+.gate-big { font-size: 1.25em; }
+@media (max-width: 640px) { .entry-gate h2 { font-size: clamp(1.3rem, 6vw, 1.8rem); } .gate-big { font-size: 1.2em; } }
