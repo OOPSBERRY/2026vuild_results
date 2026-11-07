@@ -491,3 +491,14 @@ body.doors-open .entry-gate__content { opacity: 0; pointer-events: none; transit
 .entry-gate h2 { animation: neon-glow-strong 3.2s ease-in-out infinite; }
 .gate-big { animation: neon-twinkle-strong 2.6s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .entry-gate h2, .gate-big { animation: none; } }
+
+/* 대문 문구를 다시 키워요 (위쪽 묶음이 손잡이와 안 겹치는 범위) */
+.entry-gate h2 { font-size: clamp(1.9rem, 3.8vw, 3rem); }
+.gate-big { font-size: 1.3em; }
+.gate-top > p:not(.entry-gate__eyebrow) { font-size: 1.3rem; margin-top: 14px; }
+.gate-top .entry-gate__eyebrow { font-size: .8rem; }
+@media (max-width: 640px) {
+  .entry-gate h2 { font-size: clamp(1.5rem, 6.8vw, 2.2rem); }
+  .gate-big { font-size: 1.25em; }
+  .gate-top > p:not(.entry-gate__eyebrow) { font-size: 1.05rem; }
+}
