@@ -1,9 +1,14 @@
-﻿:root {
+/* 전체 글꼴: 노토 세리프 KR (필요한 글자만 남긴 가벼운 파일) */
+@font-face {
+  font-family: "Noto Serif KR"; font-style: normal; font-weight: 200 900; font-display: swap;
+  src: url("assets/fonts/NotoSerifKR-subset.woff2") format("woff2");
+}
+:root {
   --cream: #f3e6cc;
   --amber: #f2b45a;
   --ink: #3a2616;
   --hand: "Nanum Pen Script", "Gowun Batang", cursive;
-  --serif: "Gowun Batang", "Batang", serif;
+  --serif: "Noto Serif KR", "Batang", serif;
 }
 * { box-sizing: border-box; margin: 0; }
 html, body { height: 100%; background: #0c0603; }
@@ -92,7 +97,7 @@ body.seated .intro-ui { z-index: 0; }
   --brass-500: #b99a63;
   --brass-300: #d6bd83;
   --burgundy-600: #8a2f2a;
-  --sans: "Pretendard Variable", Pretendard, SUIT, "Noto Sans KR", system-ui, sans-serif;
+  --sans: "Noto Serif KR", "Batang", serif;
   --ease: cubic-bezier(.2, .8, .2, 1);
 }
 html, body { background: var(--espresso-950); }
