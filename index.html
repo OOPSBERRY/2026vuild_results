@@ -21,6 +21,15 @@
   </div>
   <div class="floor-dark" aria-hidden="true"></div>
 
+  <!-- 색다른 경험: 두 가지 중 고르는 안내창 -->
+  <dialog class="bm-dialog exp-dialog" id="expDlg" aria-labelledby="expTitle">
+    <p class="bm-kicker">A DIFFERENT EXPERIENCE</p>
+    <h2 id="expTitle">색다른 경험</h2>
+    <p class="bm-text">하고 싶은 경험을 하나 골라 보세요.</p>
+    <div class="exp-list" id="expList"></div>
+    <button class="bm-later" id="expClose" type="button">닫기</button>
+  </dialog>
+
   <!-- 독서하러 가자: 공책에 가까이 다가가면 보여요 -->
   <div class="notebook-view" id="nbView" role="dialog" aria-label="독서하러 가자: 활동 고르기" hidden>
     <button class="nb-back" id="nbBack" type="button">← 책상으로 돌아가기</button>

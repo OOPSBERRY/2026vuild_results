@@ -77,6 +77,7 @@ function buildObjects() {
     place(b, s.box);
     b.addEventListener("click", () => {
       if (i === 0) { window.openBookmark && window.openBookmark(); return; }   // 책갈피 찾기
+      if (i === 2) { window.openExperience && window.openExperience(); return; }   // 색다른 경험 → 안내창
       if (i === 1) { window.openReading && window.openReading(b); return; }      // 독서하러 가자 → 공책 가까이
       const wait = seated ? 0 : 900;   // 안 앉았으면 먼저 앉고 열어요
       sit();
@@ -426,4 +427,34 @@ LABEL_POS.forEach((pos, i) => {
   back.addEventListener("click", close);
   view.addEventListener("click", (e) => { if (e.target === view) close(); });   // 바깥을 누르면 돌아가요
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !view.hidden && !document.querySelector("dialog[open]")) close(); });
+})();
+
+
+// ---------- 색다른 경험: 두 가지 중 고르는 안내창 ----------
+(() => {
+  const dlg = document.getElementById("expDlg");
+  const list = document.getElementById("expList");
+  function open() {
+    list.replaceChildren();
+    (window.EXPERIENCE_CHOICES || []).forEach((c) => {
+      const el = document.createElement(c.url ? "a" : "div");
+      el.className = "exp-choice" + (c.url ? "" : " exp-choice--soon");
+      if (c.url) { el.href = c.url; el.target = "_blank"; el.rel = "noopener"; }
+      const t = document.createElement("strong");
+      t.textContent = c.title;
+      const d = document.createElement("span");
+      d.textContent = c.desc;
+      el.append(t, d);
+      if (!c.url) {
+        const soon = document.createElement("em");
+        soon.textContent = "링크는 곧 열려요";
+        el.append(soon);
+      }
+      list.append(el);
+    });
+    if (!dlg.open) dlg.showModal();
+  }
+  window.openExperience = open;
+  document.getElementById("expClose").addEventListener("click", () => dlg.close());
+  dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
 })();

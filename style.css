@@ -394,3 +394,17 @@ a.hw-title:focus-visible { outline: 2px dashed #8a2f2a; outline-offset: 4px; }
 /* 공책을 볼 때는 확대된 이름표를 숨겨요 */
 .spot-label { transition: opacity 400ms var(--ease); }
 body.reading .spot-label { opacity: 0; }
+
+/* 색다른 경험 안내창 */
+.exp-list { display: grid; gap: 12px; margin: 0 0 14px; text-align: left; }
+.exp-choice {
+  background: rgba(255,255,255,.4); border: 1.5px solid var(--brass-500); border-radius: 10px; color: var(--ink-900); display: block;
+  padding: 16px 20px; text-decoration: none; transition: background 160ms var(--ease), transform 160ms var(--ease);
+}
+a.exp-choice:hover, a.exp-choice:focus-visible { background: rgba(185,154,99,.22); outline: none; transform: translateY(-1px); }
+a.exp-choice:focus-visible { outline: 3px solid var(--brass-500); outline-offset: 3px; }
+.exp-choice strong { display: block; font-size: 1.3rem; font-weight: 650; letter-spacing: -.03em; margin-bottom: 4px; }
+a.exp-choice strong::after { content: " ↗"; color: #8a6a2c; font-size: .85em; }
+.exp-choice span { color: #5a4636; display: block; font-size: 1rem; line-height: 1.6; word-break: keep-all; }
+.exp-choice em { color: #8a7a62; display: block; font-size: .85rem; font-style: normal; font-weight: 600; margin-top: 6px; }
+.exp-choice--soon { border-style: dashed; cursor: default; }
