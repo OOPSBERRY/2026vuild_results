@@ -464,3 +464,14 @@ body.doors-open .entry-gate__content { opacity: 0; pointer-events: none; transit
 .entry-gate h2 { animation: neon-glow 3.6s ease-in-out infinite; }
 .gate-big { animation: neon-twinkle 3s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .entry-gate h2, .gate-big { animation: none; } }
+
+/* 대문 문구 위치: 위쪽 묶음 / 아래쪽 묶음으로 나눠서 가운데 문 손잡이와 안 겹치게 */
+.entry-gate__content {
+  align-items: center; display: flex; flex-direction: column; inset: 0; justify-content: space-between; max-width: none;
+  padding: 8vh 4vw 9vh; position: absolute; text-align: center; width: auto;
+}
+.gate-top, .gate-bottom { align-items: center; display: flex; flex-direction: column; }
+.gate-top > p:not(.entry-gate__eyebrow) { color: var(--ivory-300); font-size: .98rem; line-height: 1.65; margin: 12px auto 0; text-shadow: 0 2px 14px rgba(0,0,0,.8); word-break: keep-all; }
+.gate-top .entry-gate__eyebrow { margin-bottom: 10px; }
+.gate-bottom .entry-gate__skip { margin-top: 14px; }
+@media (max-width: 640px) { .entry-gate__content { padding: 7vh 5vw 11vh; } }
