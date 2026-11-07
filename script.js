@@ -22,6 +22,28 @@ function place(el, box) {
 place($("sitBtn"), [627, 866, 957, 938]);
 place($("helpBtn"), [1360, 12, 1480, 52]);
 
+// ---------- 문 열고 들어가기 ----------
+const entry = $("entry");
+world.inert = true;
+let entered = false;
+function openDoor() {
+  if (entered) return;
+  entered = true;
+  entry.classList.add("opening");                       // 문이 열려요
+  setTimeout(() => entry.classList.add("entering"), 1100);   // 문 안으로 다가가요
+  setTimeout(() => {                                   // 방이 나타나요
+    entry.classList.add("gone");
+    document.body.classList.remove("door");
+    world.inert = false;
+  }, 2500);
+  setTimeout(() => {
+    entry.hidden = true;
+    $("sitBtn").focus({ preventScroll: true });
+  }, 3700);
+}
+$("doorBtn").addEventListener("click", openDoor);
+$("openBtn").addEventListener("click", openDoor);
+
 // ---------- 의자에 앉기 ----------
 let seated = false;
 function sit() {

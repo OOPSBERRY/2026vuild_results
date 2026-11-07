@@ -6,10 +6,10 @@
   <title>위로가 필요한 날 : 고요한 나의 책상</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="intro">
+<body class="intro door">
 
   <!-- 화면 양옆 빈 곳을 채우는 흐린 배경 -->
   <div class="backdrop" aria-hidden="true"></div>
@@ -22,6 +22,25 @@
     <button class="spot spot-help" id="helpBtn" type="button" aria-label="사용 안내"></button>
   </div>
   <div class="floor-dark" aria-hidden="true"></div>
+
+  <!-- 입장 화면: 문을 열고 들어가요 -->
+  <div class="entry" id="entry">
+    <div class="entry-light" aria-hidden="true"></div>
+    <div class="door-wrap" id="doorWrap">
+      <div class="peek" aria-hidden="true"></div>
+      <button class="door-panel" id="doorBtn" type="button" aria-label="문 열고 들어가기">
+        <img src="door-panel.jpg" alt="" draggable="false">
+        <span class="handle-glow" aria-hidden="true"></span>
+        <span class="plate">
+          <i></i><i></i><i></i><i></i>
+          <span class="plate-title">다독다독</span>
+          <span class="plate-quote">“많이 읽으라고 하지 않아요.<br>다독여 줄게요.”</span>
+        </span>
+      </button>
+      <img class="door-frame" src="door-frame.png" alt="" draggable="false">
+    </div>
+    <button class="pill open-btn" id="openBtn" type="button">문 열고 들어가기 →</button>
+  </div>
 
   <!-- 처음 페이지 QR 버튼 -->
   <button class="pill qr-btn" id="qrBtn" type="button">
