@@ -49,7 +49,7 @@ window.DESK_IMAGES = {
 window.DESK_QR_URL = "";
 
 // 🔖 책갈피 설문 링크 (나중에 여기에 넣어요). 비워두면 "곧 열려요"로 보여요.
-window.BOOKMARK_URL = "";
+window.BOOKMARK_URL = "https://book-planet-starlit-voyage.shrewdbluebell.chatgpt.site/";
 
 // 📚 어떤 책갈피를 골라도 추천 도서는 무조건 "어린 왕자"예요.
 window.BOOK_RESULT = {
