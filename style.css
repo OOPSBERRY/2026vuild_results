@@ -408,3 +408,14 @@ a.exp-choice strong::after { content: " ↗"; color: #8a6a2c; font-size: .85em; 
 .exp-choice span { color: #5a4636; display: block; font-size: 1rem; line-height: 1.6; word-break: keep-all; }
 .exp-choice em { color: #8a7a62; display: block; font-size: .85rem; font-style: normal; font-weight: 600; margin-top: 6px; }
 .exp-choice--soon { border-style: dashed; cursor: default; }
+
+/* 패널 안 선택 카드 (색다른 경험) */
+.tool-choices { display: grid; gap: 12px; margin: 6px 0 4px; }
+.tool-choice { background: rgba(16,13,11,.4); border: 1px solid rgba(243,235,221,.22); border-radius: 10px; color: var(--ivory-100); display: block; padding: 16px 18px; text-decoration: none; transition: border-color 160ms var(--ease), background 160ms var(--ease), transform 160ms var(--ease); }
+a.tool-choice:hover, a.tool-choice:focus-visible { background: rgba(185,154,99,.12); border-color: var(--brass-300); outline: none; transform: translateY(-1px); }
+a.tool-choice:focus-visible { outline: 3px solid var(--ivory-100); outline-offset: 3px; }
+.tool-choice strong { display: block; font-size: 1.2rem; font-weight: 650; letter-spacing: -.03em; margin-bottom: 4px; }
+.tool-choice strong span { color: var(--brass-300); font-size: .85em; }
+.tool-choice > span { color: var(--ivory-300); display: block; font-size: .95rem; line-height: 1.6; word-break: keep-all; }
+.tool-choice em { color: var(--brass-300); display: block; font-size: .82rem; font-style: normal; font-weight: 600; margin-top: 6px; }
+.tool-choice--soon { border-style: dashed; cursor: default; }

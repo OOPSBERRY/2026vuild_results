@@ -76,8 +76,6 @@ function buildObjects() {
     b.setAttribute("aria-label", item.name + " (" + s.label + ")");
     place(b, s.box);
     b.addEventListener("click", () => {
-      if (i === 0) { window.openBookmark && window.openBookmark(); return; }   // 책갈피 찾기
-      if (i === 2) { window.openExperience && window.openExperience(); return; }   // 색다른 경험 → 안내창
       if (i === 1) { window.openReading && window.openReading(b); return; }      // 독서하러 가자 → 공책 가까이
       const wait = seated ? 0 : 900;   // 안 앉았으면 먼저 앉고 열어요
       sit();
@@ -253,10 +251,46 @@ LABEL_POS.forEach((pos, i) => {
     bindCommon();
     focusPanelHeading();
   }
+  function renderBookmark() {
+    panel.dataset.view = "bookmark";
+    const m = toolMeta[0];
+    const url = window.BOOKMARK_URL;
+    const target = window.BOOKMARK_SAME_TAB === false ? "_blank" : "_self";
+    const go = url
+      ? `<a class="tool-primary" href="${escapeHtml(url)}" target="${target}" rel="noopener">책갈피 고르러 가기 <span aria-hidden="true">↗</span></a>`
+      : `<button class="tool-primary tool-disabled" type="button" disabled>책갈피 링크는 곧 열려요</button>`;
+    content.innerHTML = `
+      <p class="tool-kicker">${m.kicker}</p><h2 class="tool-title" id="toolTitle">당신의 책갈피는 무엇인가요?</h2>
+      <p class="tool-lead">책갈피를 고르면, 오늘 당신에게 건네고 싶은 책을 알려 드려요.</p>
+      <div class="tool-actions">${go}<button class="tool-secondary" type="button" id="toRec">추천 도서 보기 →</button></div>
+      <div class="tool-actions">${deskButton()}</div>`;
+    document.getElementById("toRec").addEventListener("click", () => {
+      closePanel();
+      const r = document.getElementById("recDlg");
+      if (!r.open) r.showModal();
+    });
+    bindCommon();
+    focusPanelHeading();
+  }
+  function renderExperience() {
+    panel.dataset.view = "experience";
+    const m = toolMeta[2];
+    const cards = (window.EXPERIENCE_CHOICES || []).map((c) => c.url
+      ? `<a class="tool-choice" href="${escapeHtml(c.url)}" target="_blank" rel="noopener"><strong>${escapeHtml(c.title)} <span aria-hidden="true">↗</span></strong><span>${escapeHtml(c.desc)}</span></a>`
+      : `<div class="tool-choice tool-choice--soon"><strong>${escapeHtml(c.title)}</strong><span>${escapeHtml(c.desc)}</span><em>링크는 곧 열려요</em></div>`).join("");
+    content.innerHTML = `
+      <p class="tool-kicker">${m.kicker}</p><h2 class="tool-title" id="toolTitle">${m.title}</h2><p class="tool-lead">하고 싶은 경험을 하나 골라 보세요.</p>
+      <div class="tool-choices">${cards}</div>
+      <div class="tool-actions">${deskButton()}</div>`;
+    bindCommon();
+    focusPanelHeading();
+  }
   function render(index) {
     clearInterval(timerId); timerId = 0; seconds = 60;
     const meta = toolMeta[index];
     hero.style.backgroundImage = `url('${meta.image}')`;
+    if (index === 0) return renderBookmark();       // 책갈피 찾기
+    if (index === 2) return renderExperience();     // 색다른 경험
     if (index === 1) return renderBookList();
     renderLink(index);   // 고전 단톡방 등: 설명 + 링크 카드
   }
