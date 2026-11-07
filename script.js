@@ -31,7 +31,7 @@ function revealStudy(skipMotion = false) {
   };
   document.body.classList.add("doors-open");
   if (skipMotion || reduced) finish();
-  else window.setTimeout(finish, 950);
+  else window.setTimeout(finish, 2200);
 }
 // 어떤 버튼으로 들어왔는지 기억해 둬요 (student / teacher)
 function chooseRole(role) {

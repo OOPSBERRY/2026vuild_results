@@ -521,3 +521,7 @@ body.doors-open .entry-gate__content { opacity: 0; pointer-events: none; transit
 .entry-gate__enter--teacher { background: rgba(20,13,10,.82); border-color: var(--brass-300); color: var(--ivory-100); }
 .entry-gate__enter--teacher:hover { background: var(--walnut-700); }
 @media (max-width: 640px) { .entry-gate__enter { min-width: 150px; } }
+
+/* 문이 천천히 열려요 (약 2초) */
+.entry-gate__door { transition: transform 2.2s cubic-bezier(.45,.05,.25,1); }
+.entry-gate { transition: opacity 400ms var(--ease), background 700ms var(--ease), visibility 0s linear 2.7s; }
