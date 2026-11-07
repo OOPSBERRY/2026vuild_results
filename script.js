@@ -282,7 +282,11 @@ buildObjects();
   function openBookmark() {
     if (rec.open) return;
     const url = window.BOOKMARK_URL;
-    if (url) { link.href = url; link.hidden = false; soon.hidden = true; }
+    if (url) {
+      link.href = url;
+      link.target = window.BOOKMARK_SAME_TAB === false ? "_blank" : "_self";   // 기본: 같은 창에서 열어요
+      link.hidden = false; soon.hidden = true;
+    }
     else { link.hidden = true; soon.hidden = false; }
     if (!bm.open) bm.showModal();
   }
@@ -293,6 +297,13 @@ buildObjects();
   document.getElementById("bmLater").addEventListener("click", () => bm.close());
   document.getElementById("recClose").addEventListener("click", () => rec.close());
   document.getElementById("bmBtn").addEventListener("click", openBookmark);
+  // 설문이 끝나고 주소 뒤에 ?result=1 이 붙어 돌아오면: 문과 알림창을 건너뛰고 바로 추천 화면
+  if (new URLSearchParams(window.location.search).has("result")) {
+    window.openBookmark = () => {};
+    revealStudy(true);
+    setTimeout(() => { if (!rec.open) rec.showModal(); }, 300);
+  }
+
   // 어두운 바깥을 누르면 닫기
   [bm].forEach((d) => d.addEventListener("click", (e) => { if (e.target === d) d.close(); }));
 })();

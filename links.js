@@ -57,3 +57,7 @@ window.BOOK_RESULT = {
   author: "앙투안 드 생텍쥐페리",
   image: "assets/little-prince-recommend.jpg"
 };
+
+// 🔁 설문 링크를 같은 창에서 열기 (true 권장). 설문이 끝나면 우리 사이트로 돌아오게 하려면 true로 두세요.
+// 설문 도구의 "완료 후 이동 주소"에 아래 주소를 넣어요:  ○○.onpod.ai/?result=1
+window.BOOKMARK_SAME_TAB = true;
