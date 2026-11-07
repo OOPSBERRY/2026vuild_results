@@ -26,7 +26,6 @@ function revealStudy(skipMotion = false) {
     entryGate.inert = true;
     world.inert = false;
     document.getElementById("sitBtn").focus({ preventScroll: true });
-    window.setTimeout(() => window.openBookmark && window.openBookmark(), 700);   // 들어오면 책갈피 알림창
   };
   document.body.classList.add("doors-open");
   if (skipMotion || reduced) finish();
