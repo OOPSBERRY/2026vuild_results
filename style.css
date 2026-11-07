@@ -533,3 +533,6 @@ body.doors-open .entry-gate__content { opacity: 0; pointer-events: none; transit
 .hw-num { font-size: clamp(1.4rem, 2.6vw, 1.9rem); font-weight: 700; }
 .hw-title { font-size: clamp(1.55rem, 3vw, 2.2rem); font-weight: 700; letter-spacing: -.02em; }
 .hw-desc { font-size: clamp(1rem, 1.85vw, 1.3rem); line-height: 42px; }
+
+/* 공책을 볼 때도 새 이름표를 보여서, 사진 속 옛 이름이 비치지 않게 해요 */
+body.reading .spot-label { opacity: 1; }
