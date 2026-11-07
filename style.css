@@ -525,3 +525,11 @@ body.doors-open .entry-gate__content { opacity: 0; pointer-events: none; transit
 /* 문이 천천히 열려요 (약 2초) */
 .entry-gate__door { transition: transform 2.2s cubic-bezier(.45,.05,.25,1); }
 .entry-gate { transition: opacity 400ms var(--ease), background 700ms var(--ease), visibility 0s linear 2.7s; }
+
+/* 독서하러 가자 공책: 손글씨 대신 전체 글꼴(노토 세리프 KR)로 */
+.nb-spread { --hand: "Noto Serif KR", "Batang", serif; }
+.hw-head { font-size: clamp(1.9rem, 3.6vw, 2.7rem); font-weight: 700; letter-spacing: -.02em; }
+.hw-sub { font-size: clamp(1.05rem, 1.9vw, 1.3rem); }
+.hw-num { font-size: clamp(1.4rem, 2.6vw, 1.9rem); font-weight: 700; }
+.hw-title { font-size: clamp(1.55rem, 3vw, 2.2rem); font-weight: 700; letter-spacing: -.02em; }
+.hw-desc { font-size: clamp(1rem, 1.85vw, 1.3rem); line-height: 42px; }
