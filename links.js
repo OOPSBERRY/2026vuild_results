@@ -32,7 +32,7 @@ window.DESK_LINKS = [
     name: "고전 단톡방",
     teacher: "◇◇ 선생님",
     desc: "고전 이야기를 함께 나누는 단톡방이에요.",
-    url: ""
+    url: "https://gojeon-dantokbang.onpod.ai/"
   }
 ];
 
