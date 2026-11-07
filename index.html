@@ -8,9 +8,15 @@
 </head>
 <body class="intro">
 
-  <!-- 3D 방 -->
-  <canvas id="scene" aria-hidden="true"></canvas>
-  <div class="vignette" aria-hidden="true"></div>
+  <!-- 사진 방 (문을 열면 보여요) -->
+  <div class="backdrop" aria-hidden="true"></div>
+  <div class="world" id="world" inert>
+    <img class="bg" src="assets/desk.jpg" alt="따뜻한 불빛이 켜진 밤 서재. 책상 위에 책, 스탠드, 펼친 공책, 찻잔, 화분이 놓여 있어요.">
+    <div class="spots" id="objects"></div>
+    <button class="spot spot-sit" id="sitBtn" type="button" aria-label="의자에 앉기"></button>
+    <button class="spot spot-help" id="helpBtn" type="button" aria-label="사용 안내"></button>
+  </div>
+  <div class="floor-dark" aria-hidden="true"></div>
 
   <section class="entry-gate" id="entryGate" aria-labelledby="entryTitle" aria-modal="true" role="dialog">
     <div class="entry-gate__doors" aria-hidden="true">
@@ -26,23 +32,6 @@
       <button class="entry-gate__skip" id="skipEntryBtn" type="button">바로 둘러보기</button>
     </div>
   </section>
-
-  <section class="objects" id="objects" aria-label="책상 위 물건들" inert>
-    <a id="nbOpen" class="nb-open" target="_blank" rel="noopener" aria-label="이 프로그램 열어 보기"></a>
-  </section>
-
-  <main class="stage" inert>
-    <header class="title">
-      <p class="title-small">A QUIET STUDY · FOR SLOW THOUGHTS</p>
-      <h1>고요한 나의 책상</h1>
-      <p class="title-note">책상 위 물건을 골라, 오늘의 생각을 천천히 펼쳐 보세요.</p>
-    </header>
-
-  </main>
-
-  <div class="intro-ui" id="introUi" inert>
-    <button class="sit-btn" id="sitBtn" type="button"><span>의자에 앉기</span><span aria-hidden="true">→</span></button>
-  </div>
 
   <aside class="tool-panel" id="toolPanel" aria-hidden="true" aria-labelledby="toolTitle" role="dialog" aria-modal="true" inert>
     <div class="tool-panel__backdrop" data-close-tool></div>
@@ -91,10 +80,18 @@
     <button class="qr-close" id="qrClose" type="button">닫기</button>
   </dialog>
 
+  <dialog class="qr-dialog" id="helpDlg" aria-labelledby="helpTitle">
+    <h2 id="helpTitle">이렇게 써 보세요</h2>
+    <ol class="help-steps">
+      <li><b>1</b> 아래의 <em>의자에 앉기</em>를 눌러요.</li>
+      <li><b>2</b> 책상 위 물건을 하나 눌러요.</li>
+      <li><b>3</b> 열린 창에서 활동을 해 봐요.</li>
+    </ol>
+    <button class="qr-close" id="helpClose" type="button">알겠어요</button>
+  </dialog>
+
   <script src="qrcode.min.js"></script>
-  <script src="three.min.js"></script>
   <script src="links.js"></script>
-  <script src="scene.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

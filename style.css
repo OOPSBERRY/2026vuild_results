@@ -288,3 +288,33 @@ body:not(.doors-open) .bm-btn, body.tool-open .bm-btn { display: none; }
 @media (max-width: 640px) { .bm-btn { bottom: 14px; min-height: 48px; padding: 10px 16px; right: 140px; } }
 
 :root { --ink-900: #201713; }
+
+/* ---------- 사진 방 (문을 열면 나와요) ---------- */
+:root { --ar: 1.5988; } /* 사진 가로/세로 (1586 / 992) */
+.backdrop { background: url("assets/desk.jpg") center / cover no-repeat; filter: blur(28px) brightness(.55); inset: -40px; position: fixed; z-index: 0; }
+.world {
+  height: min(100dvh, calc(100vw / var(--ar))); left: 50%; position: fixed; top: 50%; width: min(100vw, calc(100dvh * var(--ar))); z-index: 1;
+  box-shadow: 0 0 60px rgba(0,0,0,.6); transform: translate(-50%, -50%) scale(1); transform-origin: 50% 10%;
+  transition: transform 1.9s cubic-bezier(.55,.05,.25,1), filter 300ms var(--ease);
+}
+.world .bg { display: block; height: 100%; inset: 0; position: absolute; user-select: none; width: 100%; -webkit-user-drag: none; }
+body.seated .world { transform: translate(-50%, -50%) scale(1.14); }
+.floor-dark { background: linear-gradient(transparent, rgba(16,13,11,.96) 70%); bottom: 0; height: 26vh; left: 0; opacity: 0; pointer-events: none; position: fixed; right: 0; transition: opacity 1.4s ease .5s; z-index: 2; }
+body.seated .floor-dark { opacity: 1; }
+.spots { inset: 0; pointer-events: none; position: absolute; }
+.spots .spot { pointer-events: auto; }
+.spot {
+  background: transparent; border: 1.5px solid transparent; border-radius: 18px; cursor: pointer; position: absolute; -webkit-tap-highlight-color: transparent;
+  transition: border-color 160ms var(--ease), box-shadow 160ms var(--ease), background 160ms var(--ease);
+}
+.spot:hover, .spot:focus-visible { background: radial-gradient(ellipse at 50% 60%, rgba(214,189,131,.14), transparent 72%); border-color: rgba(214,189,131,.75); box-shadow: 0 0 26px rgba(214,189,131,.3); outline: none; }
+.spot-sit, .spot-help { border-radius: 40px; }
+.spot-help { border-radius: 10px; }
+body.seated .spot-sit { opacity: 0; pointer-events: none; }
+/* 문이 열리는 동안 뒤의 방이 보이게 */
+.entry-gate { transition: opacity 240ms var(--ease), background 700ms var(--ease), visibility 0s linear 1.45s; }
+body.doors-open .entry-gate { background: transparent; }
+body.tool-open .world { filter: brightness(.7); }
+.help-steps { list-style: none; margin: 0 0 22px; padding: 0; text-align: left; display: grid; gap: 12px; font-size: 1.15rem; line-height: 1.5; }
+.help-steps b { background: var(--brass-500); border-radius: 50%; color: var(--espresso-950); display: inline-grid; height: 34px; margin-right: 10px; place-items: center; width: 34px; }
+.help-steps em { color: var(--brass-300); font-style: normal; font-weight: 700; }

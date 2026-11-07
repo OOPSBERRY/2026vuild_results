@@ -1,6 +1,14 @@
-// ---------- 책상 위 물건 버튼 (3D 위에 얹는 큰 버튼) ----------
-// 물건을 누르면 책상 위 공책(3D)에 글이 써져요. 공책 글은 scene.js가 그려요.
+// ---------- 사진 방: 사진 위에 얹은 누르는 영역 → 활동 패널 ----------
 const links = window.DESK_LINKS || [];
+const IMG_W = 1586, IMG_H = 992;   // 사진 크기 (assets/desk.jpg)
+// 사진 속 물건 위치 [왼쪽, 위, 오른쪽, 아래] — links.js 순서와 같아요 (책, 펼친 공책, 찻잔, 화분)
+const SPOTS = [
+  { label: "책",       box: [60, 445, 400, 665] },
+  { label: "펼친 공책", box: [620, 455, 1000, 675] },
+  { label: "찻잔",     box: [1095, 455, 1265, 655] },
+  { label: "화분",     box: [1300, 300, 1580, 630] }
+];
+const world = document.getElementById("world");
 const objectsBox = document.getElementById("objects");
 const entryGate = document.getElementById("entryGate");
 const enterButton = document.getElementById("enterBtn");
@@ -16,7 +24,7 @@ function revealStudy(skipMotion = false) {
   const finish = () => {
     entryGate.setAttribute("aria-hidden", "true");
     entryGate.inert = true;
-    [objectsBox, document.querySelector(".stage"), document.getElementById("introUi")].forEach((node) => { node.inert = false; });
+    world.inert = false;
     document.getElementById("sitBtn").focus({ preventScroll: true });
     window.setTimeout(() => window.openBookmark && window.openBookmark(), 700);   // 들어오면 책갈피 알림창
   };
@@ -35,50 +43,46 @@ entryGate.addEventListener("keydown", (event) => {
   else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
 });
 
-function el(tag, cls, text) {
-  const e = document.createElement(tag);
-  if (cls) e.className = cls;
-  if (text) e.textContent = text;
-  return e;
+function place(el, box) {
+  el.style.left = (box[0] / IMG_W) * 100 + "%";
+  el.style.top = (box[1] / IMG_H) * 100 + "%";
+  el.style.width = ((box[2] - box[0]) / IMG_W) * 100 + "%";
+  el.style.height = ((box[3] - box[1]) / IMG_H) * 100 + "%";
 }
+place(document.getElementById("sitBtn"), [627, 866, 957, 938]);   // 사진 속 "의자에 앉기" 버튼 자리
+place(document.getElementById("helpBtn"), [1360, 12, 1480, 52]);  // 사진 속 "사용 안내" 자리
 
+// ---------- 의자에 앉기 (사진이 천천히 확대돼요) ----------
+let seated = false;
+function sit() {
+  if (seated) return;
+  seated = true;
+  document.body.classList.remove("intro");
+  document.body.classList.add("seated");
+}
+document.getElementById("sitBtn").addEventListener("click", sit);
+document.getElementById("helpBtn").addEventListener("click", () => document.getElementById("helpDlg").showModal());
+document.getElementById("helpClose").addEventListener("click", () => document.getElementById("helpDlg").close());
+
+// ---------- 물건 누르기 → 활동 패널 ----------
 function buildObjects() {
-  links.forEach((item, i) => {
-    const b = el("button", "obj");
+  SPOTS.forEach((s, i) => {
+    const item = links[i];
+    if (!item) return;
+    const b = document.createElement("button");
     b.type = "button";
+    b.className = "spot";
     b.dataset.index = i;
-    b.setAttribute("aria-pressed", "false");
-    b.setAttribute("aria-label", item.name);
-    b.appendChild(el("span", "obj-label", item.name));
-    b.addEventListener("mouseenter", () => window.Desk && Desk.hover(i, true));
-    b.addEventListener("mouseleave", () => window.Desk && Desk.hover(i, false));
-    b.addEventListener("focus", () => window.Desk && Desk.hover(i, true));
-    b.addEventListener("blur", () => window.Desk && Desk.hover(i, false));
+    b.setAttribute("aria-label", item.name + " (" + s.label + ")");
+    place(b, s.box);
     b.addEventListener("click", () => {
-      objectsBox.querySelectorAll(".obj").forEach((o) => {
-        o.classList.remove("on");
-        o.setAttribute("aria-pressed", "false");
-      });
-      b.classList.add("on");
-      b.setAttribute("aria-pressed", "true");
-      if (window.Desk) { Desk.select(i); Desk.setPage(item); }
-      if (window.DeskPanel) DeskPanel.open(i, b);
+      const wait = seated ? 0 : 900;   // 안 앉았으면 먼저 앉고 열어요
+      sit();
+      setTimeout(() => { if (window.DeskPanel) DeskPanel.open(i, b); }, wait);
     });
     objectsBox.appendChild(b);
   });
 }
-
-// ---------- 의자에 앉기 ----------
-document.getElementById("sitBtn").addEventListener("click", () => {
-  document.body.classList.remove("intro");
-  document.body.classList.add("seated");
-  window.Desk && Desk.sit();
-  setTimeout(() => {
-    const first = objectsBox.querySelector(".obj");
-    if (first) first.focus({ preventScroll: true });
-  }, 2900);
-});
-
 buildObjects();
 
 // ---------- 도구 패널: 실제 물건의 상세 활동 메뉴 ----------
@@ -89,7 +93,7 @@ buildObjects();
   const close = panel.querySelector(".tool-panel__close");
   const objects = document.getElementById("objects");
   const stage = document.querySelector(".stage");
-  const intro = document.getElementById("introUi");
+  const intro = document.getElementById("world");
   let selected = -1;
   let lastTrigger = null;
   let timerId = 0;
