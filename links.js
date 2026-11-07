@@ -29,9 +29,9 @@ window.DESK_LINKS = [
   },
   {
     object: "plant",
-    name: "만든 사람",
+    name: "고전 단톡방",
     teacher: "◇◇ 선생님",
-    desc: "이 책상을 함께 만든 사람들을 소개해요.",
+    desc: "고전 이야기를 함께 나누는 단톡방이에요.",
     url: ""
   }
 ];

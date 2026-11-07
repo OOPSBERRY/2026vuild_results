@@ -118,7 +118,7 @@ LABEL_POS.forEach((pos, i) => {
     { kicker: "BOOKMARK", title: "책갈피 찾기", lead: "나에게 어울리는 책갈피를 찾아봐요.", image: "assets/tool-book.png" },
     { kicker: "LET'S READ", title: "독서하러 가자", lead: "한 권의 책과 오늘의 나를 조용히 연결해 봐요.", image: "assets/book-little-prince-hero.png" },
     { kicker: "A DIFFERENT EXPERIENCE", title: "색다른 경험", lead: "책 밖으로 나가는 색다른 경험을 해 봐요.", image: "assets/tool-rest.png" },
-    { kicker: "MADE BY", title: "만든 사람", lead: "이 책상을 함께 만든 사람들이에요.", image: "assets/tool-journal.png" }
+    { kicker: "CLASSIC CHAT", title: "고전 단톡방", lead: "고전 이야기를 함께 나누는 단톡방이에요.", image: "assets/tool-journal.png" }
   ];
 
   const escapeHtml = (value) => String(value).replace(/[&<>\"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" })[char]);
@@ -258,8 +258,7 @@ LABEL_POS.forEach((pos, i) => {
     const meta = toolMeta[index];
     hero.style.backgroundImage = `url('${meta.image}')`;
     if (index === 1) return renderBookList();
-    if (index === 2) return renderLink(2);
-    renderCredits();
+    renderLink(index);   // 고전 단톡방 등: 설명 + 링크 카드
   }
   window.DeskPanel = {
     open(index, trigger) {
