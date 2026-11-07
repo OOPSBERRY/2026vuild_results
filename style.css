@@ -514,3 +514,10 @@ body.doors-open .entry-gate__content { opacity: 0; pointer-events: none; transit
 /* 키운 문구가 손잡이와 닿지 않게 조금 위로 */
 .entry-gate__content { padding-top: 4.5vh; }
 @media (max-width: 640px) { .entry-gate__content { padding-top: 4vh; } }
+
+/* 입장 버튼 두 개 (학생 / 교사) */
+.gate-enter-row { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+.entry-gate__enter { min-width: 168px; }
+.entry-gate__enter--teacher { background: rgba(20,13,10,.82); border-color: var(--brass-300); color: var(--ivory-100); }
+.entry-gate__enter--teacher:hover { background: var(--walnut-700); }
+@media (max-width: 640px) { .entry-gate__enter { min-width: 150px; } }

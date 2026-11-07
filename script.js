@@ -12,6 +12,7 @@ const world = document.getElementById("world");
 const objectsBox = document.getElementById("objects");
 const entryGate = document.getElementById("entryGate");
 const enterButton = document.getElementById("enterBtn");
+const teacherButton = document.getElementById("enterTeacherBtn");
 const skipEntryButton = document.getElementById("skipEntryBtn");
 let entryRevealing = false;
 
@@ -19,6 +20,7 @@ function revealStudy(skipMotion = false) {
   if (entryRevealing || entryGate.getAttribute("aria-hidden") === "true") return;
   entryRevealing = true;
   enterButton.disabled = true;
+  teacherButton.disabled = true;
   skipEntryButton.disabled = true;
   const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const finish = () => {
@@ -31,12 +33,19 @@ function revealStudy(skipMotion = false) {
   if (skipMotion || reduced) finish();
   else window.setTimeout(finish, 950);
 }
-enterButton.addEventListener("click", () => revealStudy(false));
+// 어떤 버튼으로 들어왔는지 기억해 둬요 (student / teacher)
+function chooseRole(role) {
+  document.body.dataset.role = role;
+  try { localStorage.setItem("quiet-desk-role", role); } catch (e) {}
+  revealStudy(false);
+}
+enterButton.addEventListener("click", () => chooseRole("student"));
+teacherButton.addEventListener("click", () => chooseRole("teacher"));
 skipEntryButton.addEventListener("click", () => revealStudy(true));
 requestAnimationFrame(() => enterButton.focus({ preventScroll: true }));
 entryGate.addEventListener("keydown", (event) => {
   if (event.key !== "Tab") return;
-  const controls = [enterButton, skipEntryButton];
+  const controls = [enterButton, teacherButton, skipEntryButton];
   const first = controls[0], last = controls[controls.length - 1];
   if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
   else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }

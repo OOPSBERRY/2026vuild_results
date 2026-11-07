@@ -52,7 +52,10 @@
       <p>교사도, 학생도</p>
       </div>
       <div class="gate-bottom">
-      <button class="entry-gate__enter" id="enterBtn" type="button">입장하기 <span aria-hidden="true">→</span></button>
+      <div class="gate-enter-row">
+        <button class="entry-gate__enter" id="enterBtn" type="button" data-role="student">학생으로 입장 <span aria-hidden="true">→</span></button>
+        <button class="entry-gate__enter entry-gate__enter--teacher" id="enterTeacherBtn" type="button" data-role="teacher">교사로 입장 <span aria-hidden="true">→</span></button>
+      </div>
       <button class="entry-gate__skip" id="skipEntryBtn" type="button">바로 둘러보기</button>
       </div>
     </div>
