@@ -72,7 +72,7 @@ window.DESK_CREDITS = [
 // 📖 "독서하러 가자" 공책에 손글씨로 써지는 활동 (제목을 누르면 url로 이동해요. 링크는 나중에 여기에 넣어요)
 window.READING_ACTIVITIES = [
   { title: "Book生극장", desc: "나의 선택이 이야기에 어떤 영향을 주는지 결정해보세요.", url: "https://booklife-theater.vercel.app/" },
-  { title: "고전네컷", desc: "현대적 관점으로 이야기를 이어써보세요.", url: "https://classic4cuts.vercel.app/demo.html" },
+  { title: "고전네컷", desc: "현대적 관점으로 이야기를 이어써보세요.", url: "https://classic4cut.vercel.app/" },
   { title: "모두의 고전", desc: "작품 속 인물의 감정을 나만의 캐릭터와 카드로 표현해보세요.", url: "https://little-prince-portrait.vercel.app/" }
 ];
 
