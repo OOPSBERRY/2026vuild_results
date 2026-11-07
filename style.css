@@ -95,24 +95,23 @@ body.seated .spot-sit { opacity: 0; pointer-events: none; }
   background: radial-gradient(ellipse 36% 55% at 50% 45%, rgba(255, 190, 110, .12), transparent 70%);
 }
 .door-wrap {
-  position: absolute; top: 0; left: 50%;
-  height: min(100dvh, calc(100vw * 1.118)); aspect-ratio: 840 / 939;
-  transform: translateX(-50%) scale(1); transform-origin: 50% 53%;
+  position: absolute; top: 50%; left: 50%;
+  width: max(100vw, calc(100dvh * 1.7768)); aspect-ratio: 1672 / 941;
+  transform: translate(-50%, -50%) scale(1); transform-origin: 56.4% 50%;
   perspective: 1700px;
   transition: transform 2.1s cubic-bezier(.55, 0, .9, .5);
-  filter: drop-shadow(0 0 40px rgba(0, 0, 0, .7));
 }
-.entering .door-wrap { transform: translateX(-50%) scale(3.3); }
+.entering .door-wrap { transform: translate(-50%, -50%) scale(2.7); }
 
 /* 문 뒤로 보이는 방 */
 .peek {
-  position: absolute; left: 7.14%; top: 6.5%; width: 86.2%; height: 93.5%;
+  position: absolute; left: 27.39%; top: 0; width: 57.78%; height: 100%;
   background: url("desk.jpg") 50% 40% / cover no-repeat;
   filter: brightness(.7) saturate(1.1);
   box-shadow: inset 0 0 60px 10px rgba(0, 0, 0, .65);
 }
 .door-panel {
-  position: absolute; left: 7.14%; top: 6.5%; width: 86.2%; height: 93.5%;
+  position: absolute; left: 27.39%; top: 0; width: 57.78%; height: 100%;
   padding: 0; border: 0; background: none; cursor: pointer;
   container-type: inline-size;
   transform-origin: 100% 50%;
@@ -123,12 +122,14 @@ body.seated .spot-sit { opacity: 0; pointer-events: none; }
 .door-panel:hover { filter: brightness(1.1); }
 .door-panel:focus-visible { outline: 3px dashed rgba(242, 180, 90, .9); outline-offset: -6px; }
 .opening .door-panel { transform: rotateY(-80deg); filter: brightness(.55); cursor: default; }
-.door-frame { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; user-select: none; }
+.door-side { position: absolute; top: 0; height: 100%; pointer-events: none; user-select: none; }
+.door-left { left: 0; width: 27.39%; }
+.door-right { left: 85.17%; width: 14.83%; }
 
 /* 금색 금속 문패 (원래 있던 101 문패를 덮어요) */
 .plate {
-  position: absolute; left: 50%; top: 34.2%; transform: translate(-50%, -50%);
-  width: 68cqw; padding: 3.4cqw 4cqw 3.8cqw; text-align: center;
+  position: absolute; left: 50%; top: 30%; transform: translate(-50%, -50%);
+  width: 62cqw; padding: 3.4cqw 4cqw 3.8cqw; text-align: center;
   border-radius: 5.5cqw;
   background:
     linear-gradient(115deg, rgba(255,255,255,0) 30%, rgba(255,250,215,.55) 46%, rgba(255,255,255,0) 60%),
@@ -295,3 +296,4 @@ body.door .world { transform: translate(-50%, -50%) scale(1.12); }
 @media (prefers-reduced-motion: reduce) {
   * { transition-duration: .01s !important; transition-delay: 0s !important; animation: none !important; }
 }
+
