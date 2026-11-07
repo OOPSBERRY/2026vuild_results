@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>위로가 필요한 날 : 고요한 나의 책상</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="intro">
+
+  <!-- 공용 그림 재료 (색 그라데이션, 그림자 흐림) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <filter id="blur5" x="-30%" y="-100%" width="160%" height="300%"><feGaussianBlur stdDeviation="5"/></filter>
+      <filter id="blur12" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="12"/></filter>
+
+      <linearGradient id="gCream" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0" stop-color="#a89478"/><stop offset=".22" stop-color="#e9dcc3"/>
+        <stop offset=".5" stop-color="#f3e9d6"/><stop offset="1" stop-color="#8f7c62"/>
+      </linearGradient>
+      <linearGradient id="gGlaze" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0" stop-color="#2d2c26"/><stop offset=".25" stop-color="#6d6b5d"/>
+        <stop offset=".55" stop-color="#55544a"/><stop offset="1" stop-color="#25241f"/>
+      </linearGradient>
+      <linearGradient id="gShade" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0" stop-color="rgba(0,0,0,.45)"/><stop offset=".2" stop-color="rgba(255,255,255,.18)"/>
+        <stop offset=".45" stop-color="rgba(255,255,255,0)"/><stop offset="1" stop-color="rgba(0,0,0,.5)"/>
+      </linearGradient>
+      <linearGradient id="gRoundV" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0" stop-color="rgba(255,255,255,.22)"/><stop offset=".4" stop-color="rgba(255,255,255,0)"/>
+        <stop offset="1" stop-color="rgba(0,0,0,.35)"/>
+      </linearGradient>
+      <linearGradient id="gLeather" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0" stop-color="#7a4a2d"/><stop offset=".5" stop-color="#5a3320"/><stop offset="1" stop-color="#341d11"/>
+      </linearGradient>
+      <linearGradient id="gGreenBook" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0" stop-color="#46634f"/><stop offset=".5" stop-color="#2f4a3a"/><stop offset="1" stop-color="#1b2e23"/>
+      </linearGradient>
+      <linearGradient id="gGold" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0" stop-color="#8a6a2c"/><stop offset=".5" stop-color="#e3c479"/><stop offset="1" stop-color="#8a6a2c"/>
+      </linearGradient>
+      <linearGradient id="gBrass" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0" stop-color="#6e5222"/><stop offset=".4" stop-color="#e0bf70"/><stop offset="1" stop-color="#5d4519"/>
+      </linearGradient>
+      <linearGradient id="gPages" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0" stop-color="#f1e6cc"/><stop offset="1" stop-color="#bda782"/>
+      </linearGradient>
+      <linearGradient id="gWoodV" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0" stop-color="#2b170b"/><stop offset=".35" stop-color="#6a4126"/>
+        <stop offset=".6" stop-color="#4d2d19"/><stop offset="1" stop-color="#22110a"/>
+      </linearGradient>
+      <linearGradient id="gShadeLamp" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0" stop-color="#b8662a"/><stop offset=".3" stop-color="#ffd48a"/>
+        <stop offset=".6" stop-color="#ffcf7e"/><stop offset="1" stop-color="#b05d22"/>
+      </linearGradient>
+      <linearGradient id="gShadeLampV" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0" stop-color="rgba(255,255,255,.25)"/><stop offset="1" stop-color="rgba(120,50,10,.35)"/>
+      </linearGradient>
+      <radialGradient id="gGlow" cx=".5" cy=".5" r=".5">
+        <stop offset="0" stop-color="rgba(255,196,110,.75)"/><stop offset=".5" stop-color="rgba(255,160,70,.25)"/>
+        <stop offset="1" stop-color="rgba(255,140,50,0)"/>
+      </radialGradient>
+      <linearGradient id="gConcrete" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0" stop-color="#6f6357"/><stop offset=".3" stop-color="#c2b4a2"/>
+        <stop offset=".6" stop-color="#a09282"/><stop offset="1" stop-color="#5c5147"/>
+      </linearGradient>
+      <radialGradient id="gLeaf" cx=".5" cy="1" r="1">
+        <stop offset="0" stop-color="#3d6a2c"/><stop offset=".6" stop-color="#7fa653"/><stop offset="1" stop-color="#c3d27e"/>
+      </radialGradient>
+      <radialGradient id="gTea" cx=".4" cy=".4" r=".7">
+        <stop offset="0" stop-color="#9a6234"/><stop offset="1" stop-color="#4b2812"/>
+      </radialGradient>
+    </defs>
+  </svg>
+
+  <!-- 책상 (나무 결, 스탠드 빛, 어두운 가장자리) -->
+  <div class="desk" aria-hidden="true">
+    <svg class="wood" width="100%" height="100%" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="woodBase" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stop-color="#2c180c"/><stop offset=".45" stop-color="#5b3820"/><stop offset="1" stop-color="#3f2515"/>
+        </linearGradient>
+        <filter id="grainDark" x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.0022 0.085" numOctaves="5" seed="7"/>
+          <feColorMatrix type="matrix" values="0 0 0 0 0.07  0 0 0 0 0.03  0 0 0 0 0.01  2.2 0 0 0 -0.75"/>
+        </filter>
+        <filter id="grainLight" x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.004 0.2" numOctaves="3" seed="21"/>
+          <feColorMatrix type="matrix" values="0 0 0 0 0.62  0 0 0 0 0.38  0 0 0 0 0.2  1.6 0 0 0 -0.72"/>
+        </filter>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#woodBase)"/>
+      <rect width="100%" height="100%" filter="url(#grainDark)"/>
+      <rect width="100%" height="100%" filter="url(#grainLight)" opacity=".55"/>
+    </svg>
+    <div class="wall">
+      <div class="shelves" id="shelves"></div>
+      <div class="window"><div class="window-view"></div><i></i><i></i></div>
+    </div>
+    <div class="planks"></div>
+    <div class="lamp-glow"></div>
+    <div class="vignette"></div>
+  </div>
+
+  <main class="stage">
+    <header class="title">
+      <p class="title-small">위로가 필요한 날 :</p>
+      <h1>고요한 나의 책상</h1>
+    </header>
+
+    <section class="objects" id="objects" aria-label="책상 위 물건들"></section>
+
+    <section class="notebook" id="notebook" aria-live="polite">
+      <div class="pages">
+        <article class="page page-left" id="pageLeft"></article>
+        <article class="page page-right" id="pageRight"></article>
+      </div>
+      <div class="cover" aria-hidden="true">
+        <div class="cover-label">나의 책상 노트</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 처음 장면: 의자 + 앉기 버튼 -->
+  <div class="intro-ui" id="introUi">
+    <button class="sit-btn" id="sitBtn" type="button">의자에 앉기</button>
+    <div class="chair" aria-hidden="true">
+      <svg viewBox="0 0 600 520" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="chWood" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0" stop-color="#1d0f07"/><stop offset=".3" stop-color="#5a3519"/>
+            <stop offset=".55" stop-color="#43260f"/><stop offset="1" stop-color="#170b05"/>
+          </linearGradient>
+          <linearGradient id="chWoodH" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0" stop-color="#6b4220"/><stop offset=".5" stop-color="#4a2a13"/><stop offset="1" stop-color="#26130a"/>
+          </linearGradient>
+          <linearGradient id="chKnit" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0" stop-color="#cbbfae"/><stop offset=".6" stop-color="#a89b88"/><stop offset="1" stop-color="#6f6456"/>
+          </linearGradient>
+          <pattern id="knit" width="10" height="10" patternUnits="userSpaceOnUse">
+            <path d="M0 5 Q2.5 0 5 5 T10 5" stroke="rgba(60,45,30,.35)" fill="none" stroke-width="1.6"/>
+          </pattern>
+        </defs>
+        <ellipse cx="300" cy="505" rx="250" ry="16" fill="rgba(0,0,0,.6)" filter="url(#blur12)"/>
+        <rect x="110" y="70" width="30" height="420" rx="6" fill="url(#chWood)"/>
+        <rect x="460" y="70" width="30" height="420" rx="6" fill="url(#chWood)"/>
+        <rect x="150" y="110" width="26" height="210" rx="4" fill="url(#chWood)"/>
+        <rect x="215" y="110" width="26" height="210" rx="4" fill="url(#chWood)"/>
+        <rect x="280" y="110" width="26" height="210" rx="4" fill="url(#chWood)"/>
+        <rect x="345" y="110" width="26" height="210" rx="4" fill="url(#chWood)"/>
+        <rect x="410" y="110" width="26" height="210" rx="4" fill="url(#chWood)"/>
+        <rect x="92" y="40" width="416" height="64" rx="22" fill="url(#chWoodH)"/>
+        <rect x="100" y="46" width="400" height="8" rx="4" fill="rgba(255,220,170,.18)"/>
+        <rect x="90" y="318" width="420" height="40" rx="8" fill="url(#chWoodH)"/>
+        <rect x="70" y="296" width="460" height="78" rx="34" fill="url(#chKnit)"/>
+        <rect x="70" y="296" width="460" height="78" rx="34" fill="url(#knit)"/>
+        <rect x="80" y="300" width="440" height="12" rx="6" fill="rgba(255,255,255,.28)"/>
+        <rect x="104" y="372" width="26" height="130" rx="5" fill="url(#chWood)"/>
+        <rect x="470" y="372" width="26" height="130" rx="5" fill="url(#chWood)"/>
+      </svg>
+    </div>
+  </div>
+
+  <script src="links.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
