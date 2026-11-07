@@ -428,3 +428,7 @@ a.tool-choice:focus-visible { outline: 3px solid var(--ivory-100); outline-offse
 /* 오른쪽 아래 호스팅 배지(예: Netlify)에 안 가려지게 위로 올려요 */
 .qr-btn, .bm-btn { bottom: calc(clamp(16px, 3vh, 32px) + 56px); }
 @media (max-width: 640px) { .qr-btn, .bm-btn { bottom: 70px; } }
+
+/* 대문 문구가 두 줄에 들어가도록 칸을 넓혀요 */
+.entry-gate__content { max-width: min(92vw, 700px); }
+.entry-gate h2 { word-break: keep-all; }
