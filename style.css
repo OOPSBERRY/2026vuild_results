@@ -436,3 +436,8 @@ a.tool-choice:focus-visible { outline: 3px solid var(--ivory-100); outline-offse
 /* 대문의 "다독 다독"을 크게 */
 .gate-big { display: inline-block; font-size: 1.75em; font-weight: 700; letter-spacing: .02em; line-height: 1.15; margin-bottom: .08em; }
 @media (max-width: 640px) { .entry-gate h2 { font-size: clamp(1.5rem, 7.2vw, 2.1rem); } .gate-big { font-size: 1.5em; } }
+
+/* 입장하기를 누르면 문구는 바로 사라지고, 문은 빨리 열려서 방이 바로 보여요 */
+body.doors-open .entry-gate__content { opacity: 0; pointer-events: none; transition: opacity 120ms ease; visibility: hidden; }
+.entry-gate__door { transition: transform .9s cubic-bezier(.2,.8,.1,1); }
+.entry-gate { transition: opacity 240ms var(--ease), background 350ms var(--ease), visibility 0s linear 1s; }

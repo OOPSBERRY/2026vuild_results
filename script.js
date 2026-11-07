@@ -30,7 +30,7 @@ function revealStudy(skipMotion = false) {
   };
   document.body.classList.add("doors-open");
   if (skipMotion || reduced) finish();
-  else window.setTimeout(finish, 1420);
+  else window.setTimeout(finish, 950);
 }
 enterButton.addEventListener("click", () => revealStudy(false));
 skipEntryButton.addEventListener("click", () => revealStudy(true));
