@@ -502,3 +502,15 @@ body.doors-open .entry-gate__content { opacity: 0; pointer-events: none; transit
   .gate-big { font-size: 1.25em; }
   .gate-top > p:not(.entry-gate__eyebrow) { font-size: 1.05rem; }
 }
+
+/* 대문 문구 세 줄(다독 다독 / 책으로 위로받는 시간 / 교사도, 학생도) 20% 더 크게 */
+.entry-gate h2 { font-size: clamp(2.28rem, 4.56vw, 3.6rem); }
+.gate-top > p:not(.entry-gate__eyebrow) { font-size: 1.56rem; }
+@media (max-width: 640px) {
+  .entry-gate h2 { font-size: clamp(1.8rem, 8.2vw, 2.64rem); }
+  .gate-top > p:not(.entry-gate__eyebrow) { font-size: 1.26rem; }
+}
+
+/* 키운 문구가 손잡이와 닿지 않게 조금 위로 */
+.entry-gate__content { padding-top: 4.5vh; }
+@media (max-width: 640px) { .entry-gate__content { padding-top: 4vh; } }
