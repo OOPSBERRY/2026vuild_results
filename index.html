@@ -48,6 +48,8 @@
     QR 코드
   </button>
 
+  <button class="pill bti-btn" id="btiBtn" type="button">📜 북BTI</button>
+
   <!-- 물건을 누르면 나오는 설명 카드 -->
   <aside class="card" id="card" hidden aria-live="polite">
     <button class="card-x" id="cardX" type="button" aria-label="닫기">✕</button>
@@ -59,6 +61,50 @@
       <span class="pill pill-soon" id="cardSoon">곧 열려요 🌙</span>
     </div>
   </aside>
+
+  <!-- 양피지 모양을 찢어진 가장자리로 만드는 재료 -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <filter id="rough" x="-6%" y="-6%" width="112%" height="112%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="4" seed="4" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="18" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </svg>
+
+  <!-- 북BTI 알림 (양피지) -->
+  <div class="bti" id="bti" hidden role="dialog" aria-modal="true" aria-labelledby="btiTitle">
+    <div class="parchment">
+      <div class="parch-bg" aria-hidden="true"></div>
+      <div class="parch-body">
+        <div id="btiStep1">
+          <p class="parch-kicker">문 너머에서 온 편지</p>
+          <h2 id="btiTitle">당신의 북BTI는?</h2>
+          <p class="parch-text">나는 어떤 책을 좋아하는 사람일까요?<br>몇 가지 질문에 답하면, 나에게 꼭 맞는 책을 건네 드려요.</p>
+          <button class="ink-btn" id="btiStart" type="button">북BTI 시작하기</button>
+          <button class="ink-link" id="btiLater" type="button">나중에 할래요</button>
+        </div>
+        <div id="btiStep2" hidden>
+          <p class="parch-kicker">잠깐 쉬어도 좋아요</p>
+          <h2>설문을 마쳤나요?</h2>
+          <p class="parch-text">마음의 준비가 되면,<br>당신에게 어울리는 책을 보여 드릴게요.</p>
+          <button class="ink-btn" id="btiResult" type="button">결과 보기 →</button>
+          <button class="ink-link" id="btiAgain" type="button">설문 다시 열기</button>
+        </div>
+        <span class="seal" aria-hidden="true">B</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 북BTI 결과: 어린 왕자 -->
+  <section class="rec" id="rec" hidden aria-label="북BTI 결과">
+    <p class="rec-kicker">당신의 북BTI 추천 도서</p>
+    <div class="rec-stage">
+      <img id="recImg" src="bookbti-result.jpg" alt="북BTI 결과 어린 왕자. 작은 별 위에 앉은 어린 왕자와 유리 덮개 속 장미가 그려진 가죽 표지 책">
+      <button class="pill rec-friends" id="recFriends" type="button"></button>
+    </div>
+    <button class="pill rec-close" id="recClose" type="button">책상으로 가기</button>
+  </section>
+
+  <div class="toast" id="toast" role="status" hidden></div>
 
   <!-- QR 창 -->
   <dialog class="modal" id="qrDlg">

@@ -29,17 +29,16 @@ let entered = false;
 function openDoor() {
   if (entered) return;
   entered = true;
-  entry.classList.add("opening");                       // 문이 열려요
-  setTimeout(() => entry.classList.add("entering"), 1100);   // 문 안으로 다가가요
-  setTimeout(() => {                                   // 방이 나타나요
+  // 한 번에 이어져요: 문이 열리는 동안 바로 안으로 다가가서 방에 도착
+  entry.classList.add("opening");                          // 문이 열려요
+  setTimeout(() => entry.classList.add("entering"), 450);  // 곧바로 안으로 다가가요
+  setTimeout(() => {                                       // 방이 나타나요
     entry.classList.add("gone");
     document.body.classList.remove("door");
     world.inert = false;
-  }, 2500);
-  setTimeout(() => {
-    entry.hidden = true;
-    $("sitBtn").focus({ preventScroll: true });
-  }, 3700);
+  }, 1800);
+  setTimeout(() => { entry.hidden = true; }, 2900);
+  setTimeout(showBti, 3300);                               // 도착하면 양피지 알림
 }
 $("doorBtn").addEventListener("click", openDoor);
 $("openBtn").addEventListener("click", openDoor);
@@ -126,4 +125,69 @@ $("helpClose").addEventListener("click", () => $("helpDlg").close());
 ["qrDlg", "helpDlg"].forEach((id) => {
   const d = $(id);
   d.addEventListener("click", (e) => { if (e.target === d) d.close(); });
+});
+
+// ---------- 북BTI: 양피지 알림 → (설문) → 결과는 무조건 어린 왕자 ----------
+const bti = $("bti"), rec = $("rec");
+const RESULT = window.BOOK_RESULT || { title: "어린 왕자", reviewUrl: "" };
+
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.hidden = false;
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { t.hidden = true; }, 2600);
+}
+
+function showBti() {
+  $("btiStep1").hidden = false;
+  $("btiStep2").hidden = true;
+  bti.hidden = false;
+  requestAnimationFrame(() => requestAnimationFrame(() => bti.classList.add("show")));
+  setTimeout(() => $("btiStart").focus({ preventScroll: true }), 1000);
+}
+function closeBti() {
+  bti.classList.remove("show");
+  setTimeout(() => { bti.hidden = true; }, 500);
+}
+
+function showResult() {
+  closeBti();
+  const last = RESULT.title.charCodeAt(RESULT.title.length - 1);
+  const josa = (last - 0xac00) % 28 === 0 ? "를" : "을";   // 받침이 없으면 '를', 있으면 '을'
+  $("recFriends").textContent = "「" + RESULT.title + "」" + josa + " 먼저 만난 친구들의 이야기 →";
+  rec.hidden = false;
+  requestAnimationFrame(() => requestAnimationFrame(() => rec.classList.add("show")));
+  setTimeout(() => $("recFriends").focus({ preventScroll: true }), 1400);
+}
+function closeResult() {
+  rec.classList.remove("show");
+  setTimeout(() => { rec.hidden = true; }, 800);
+}
+
+$("btiStart").addEventListener("click", () => {
+  const url = window.BOOKBTI_URL;
+  if (url) {                              // 설문 링크가 있으면 새 창으로 열고, 돌아오면 결과 보기
+    window.open(url, "_blank", "noopener");
+    $("btiStep1").hidden = true;
+    $("btiStep2").hidden = false;
+    setTimeout(() => $("btiResult").focus({ preventScroll: true }), 50);
+  } else {
+    showResult();                         // 링크가 아직 없으면 바로 결과
+  }
+});
+$("btiAgain").addEventListener("click", () => { if (window.BOOKBTI_URL) window.open(window.BOOKBTI_URL, "_blank", "noopener"); });
+$("btiResult").addEventListener("click", showResult);
+$("btiLater").addEventListener("click", closeBti);
+$("btiBtn").addEventListener("click", showBti);
+
+$("recFriends").addEventListener("click", () => {
+  if (RESULT.reviewUrl) window.open(RESULT.reviewUrl, "_blank", "noopener");
+  else toast("친구들의 서평을 준비 중이에요 🌙");
+});
+$("recClose").addEventListener("click", closeResult);
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape") return;
+  if (!rec.hidden) closeResult();
+  else if (!bti.hidden) closeBti();
 });

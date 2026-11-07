@@ -34,6 +34,16 @@ window.DESK_LINKS = [
   }
 ];
 
+// 📜 북BTI 설문 링크 (나중에 여기에 넣어요). 비워두면 설문 없이 바로 결과가 나와요.
+window.BOOKBTI_URL = "";
+
+// 📚 북BTI 결과는 무조건 "어린 왕자"예요.
+// reviewUrl: 「어린 왕자」를 먼저 만난 친구들의 서평 링크 (나중에 여기에 넣어요)
+window.BOOK_RESULT = {
+  title: "어린 왕자",
+  reviewUrl: ""
+};
+
 // 📱 QR 코드가 가리킬 주소. 비워두면 지금 열린 주소가 자동으로 들어가요.
 // 배포가 끝나면 ○○.onpod.ai 주소가 자동으로 QR이 돼요.
 window.DESK_QR_URL = "";
