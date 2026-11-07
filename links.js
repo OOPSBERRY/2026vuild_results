@@ -35,3 +35,11 @@ window.DESK_LINKS = [
     url: ""
   }
 ];
+
+// 🖼️ 실사 이미지를 쓰고 싶을 때: 이미지 파일을 이 폴더에 넣고 파일 이름만 적어요.
+// 비워두면 코드로 그린 나무결/벽/창밖이 쓰여요.
+window.DESK_IMAGES = {
+  desk: "",    // 책상 나무결 사진 (예: "desk.jpg")
+  wall: "",    // 뒤쪽 벽 사진 (예: "wall.jpg")
+  window: ""   // 창밖 풍경 사진 (예: "window.jpg")
+};
