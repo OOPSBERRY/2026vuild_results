@@ -79,5 +79,5 @@ window.READING_ACTIVITIES = [
 // 🎭 "색다른 경험" 안내창의 선택지 2가지 (제목을 누르면 url로 이동해요. 링크는 나중에 여기에 넣어요)
 window.EXPERIENCE_CHOICES = [
   { title: "너를 보여줘", desc: "작품 속 인물 시점의 다시보는 뮤직비디오를 확인해보세요.", url: "" },
-  { title: "북커버 디자이너", desc: "나만의 책 표지를 만들어보세요.", url: "" }
+  { title: "북커버 디자이너", desc: "나만의 책 표지를 만들어보세요.", url: "https://bookcover-perspective-studio.skadjs12.chatgpt.site/" }
 ];
