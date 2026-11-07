@@ -7,13 +7,13 @@
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputEncoding = T.sRGBEncoding;
   renderer.toneMapping = T.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.25;
+  renderer.toneMappingExposure = 1.14;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = T.PCFSoftShadowMap;
 
   const scene = new T.Scene();
-  scene.background = new T.Color(0x0c0603);
-  scene.fog = new T.FogExp2(0x0c0603, 0.16);
+  scene.background = new T.Color(0x100d0b);
+  scene.fog = new T.FogExp2(0x100d0b, 0.105);
   const camera = new T.PerspectiveCamera(45, 1, 0.05, 30);
 
   const IMG = window.DESK_IMAGES || {};
@@ -39,6 +39,7 @@
     const t = loader.load(path);
     t.encoding = T.sRGBEncoding;
     t.wrapS = t.wrapT = T.RepeatWrapping;
+    t.anisotropy = 8;
     return t;
   }
   function shadowed(obj, cast = true, receive = true) {
@@ -71,6 +72,7 @@
     [h * 0.33, h * 0.66].forEach((y) => g.fillRect(0, y, w, 3));
   }));
   woodTex.wrapS = woodTex.wrapT = T.RepeatWrapping;
+  woodTex.repeat.set(1.15, 1);
 
   const wallTex = imageTex(IMG.wall, canvasTex(1024, 512, (g, w, h) => {
     g.fillStyle = "#2b1a10"; g.fillRect(0, 0, w, h);
@@ -83,17 +85,17 @@
 
   const viewTex = imageTex(IMG.window, canvasTex(512, 512, (g, w, h) => {
     const sky = g.createLinearGradient(0, 0, 0, h);
-    sky.addColorStop(0, "#d4dfb8"); sky.addColorStop(1, "#6f8a4a");
+    sky.addColorStop(0, "#f0c98e"); sky.addColorStop(0.55, "#b86738"); sky.addColorStop(1, "#4c2618");
     g.fillStyle = sky; g.fillRect(0, 0, w, h);
     g.filter = "blur(14px)";
-    const cols = ["#4f7a33", "#7da04a", "#b79a3e", "#3b6429", "#a3b85a"];
+    const cols = ["#43251a", "#6a3b20", "#a56732", "#7b4b23", "#d49a4a"];
     for (let i = 0; i < 70; i++) { g.fillStyle = cols[i % cols.length]; g.globalAlpha = 0.75; g.beginPath(); g.arc(rnd() * w, h * 0.25 + rnd() * h * 0.8, 20 + rnd() * 60, 0, 7); g.fill(); }
   }));
 
   // ---------- 방 ----------
   const room = new T.Group(); scene.add(room);
 
-  const floor = new T.Mesh(new T.PlaneGeometry(12, 12), std(0x120a05, 0.9));
+  const floor = new T.Mesh(new T.PlaneGeometry(12, 12), std(0x100d0b, 0.94));
   floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; room.add(floor);
 
   const wall = new T.Mesh(new T.PlaneGeometry(10, 4), std(0xffffff, 0.9, 0, { map: wallTex }));
@@ -101,17 +103,25 @@
   wall.position.set(0, 2, -0.66); wall.receiveShadow = true; room.add(wall);
 
   // 책상
-  const deskTop = new T.Mesh(new T.BoxGeometry(3.6, 0.05, 1.25), std(0xffffff, 0.55, 0, { map: woodTex }));
+  const deskTop = new T.Mesh(new T.BoxGeometry(3.6, 0.085, 1.25), std(0xf2dfc6, 0.46, 0, { map: woodTex }));
   deskTop.position.set(0, 0.725, 0); deskTop.castShadow = true; deskTop.receiveShadow = true; room.add(deskTop);
+  const deskApron = new T.Mesh(new T.BoxGeometry(3.45, 0.13, 0.06), std(0xffffff, 0.5, 0, { map: woodTex }));
+  deskApron.position.set(0, 0.64, 0.57); deskApron.castShadow = deskApron.receiveShadow = true; room.add(deskApron);
   [[-1.7, -0.55], [1.7, -0.55], [-1.7, 0.55], [1.7, 0.55]].forEach(([x, z]) => {
-    const leg = new T.Mesh(new T.BoxGeometry(0.06, 0.7, 0.06), std(0x2a170b, 0.7));
+    const leg = new T.Mesh(new T.BoxGeometry(0.075, 0.7, 0.075), std(0xffffff, 0.52, 0, { map: woodTex }));
     leg.position.set(x, 0.35, z); leg.castShadow = true; room.add(leg);
   });
 
   // 책장 (왼쪽 뒤)
   const shelfMat = std(0x2a170b, 0.75);
-  const palette = [0x5a2f1d, 0x2f3d52, 0x3d2a1f, 0x6b4a2a, 0x22303a, 0x4a1f1f, 0x7a6a4a, 0x26322a, 0x5c3b28, 0x6a2c22];
-  const bookMats = palette.map((c) => std(c, 0.65));
+  const palette = [0x5a2f1d, 0x4d291d, 0x3d2a1f, 0x6b4a2a, 0x51311e, 0x4a1f1f, 0x7a6a4a, 0x3d3521, 0x5c3b28, 0x6a2c22];
+  const shelfSpine = (index) => {
+    const map = loader.load("assets/shelf-spines-atlas.png");
+    map.encoding = T.sRGBEncoding; map.wrapS = map.wrapT = T.ClampToEdgeWrapping;
+    map.repeat.set(1 / 8, 1); map.offset.set((index % 8) / 8, 0); map.anisotropy = 8;
+    return std(0xffffff, 0.48, 0, { map });
+  };
+  const bookMats = palette.map((_, index) => shelfSpine(index));
   const goldMat = std(0xd9b865, 0.4, 0.6);
   const shelfX0 = -1.75, shelfX1 = 0.35;
   [0.8, 1.17, 1.54, 1.91].forEach((y, row) => {
@@ -139,18 +149,20 @@
   const win = new T.Group(); win.position.set(0.92, 1.45, -0.64); room.add(win);
   const glass = new T.Mesh(new T.PlaneGeometry(0.8, 1.05), new T.MeshBasicMaterial({ map: viewTex, color: 0xcfd8b0 }));
   win.add(glass);
-  const frameMat = std(0xcdbfa5, 0.6);
+  const frameMat = std(0x5c3823, 0.52);
   [[0, 0.54, 0.86, 0.05], [0, -0.54, 0.86, 0.05], [-0.42, 0, 0.05, 1.12], [0.42, 0, 0.05, 1.12], [0, 0, 0.03, 1.05], [0, 0.0, 0.8, 0.03]].forEach(([x, y, w, h]) => {
     const f = new T.Mesh(new T.BoxGeometry(w, h, 0.06), frameMat); f.position.set(x, y, 0.02); f.castShadow = true; win.add(f);
   });
-  const sill = new T.Mesh(new T.BoxGeometry(1.0, 0.04, 0.22), std(0x4a3b2e, 0.6));
+  const sill = new T.Mesh(new T.BoxGeometry(1.0, 0.04, 0.22), std(0x3d2417, 0.52));
   sill.position.set(0.92, 0.9, -0.55); sill.receiveShadow = true; room.add(sill);
 
   // ---------- 빛 ----------
-  scene.add(new T.HemisphereLight(0x4a3828, 0x1a0f08, 0.75));
-  const windowLight = new T.SpotLight(0xdfe9c8, 1.1, 5, 0.9, 1, 1.5);
+  scene.add(new T.HemisphereLight(0xb8895b, 0x120c0a, 0.48));
+  const windowLight = new T.SpotLight(0xffbd72, 0.72, 5, 0.9, 1, 1.5);
   windowLight.position.set(0.92, 1.5, -0.45); windowLight.target.position.set(0.3, 0.75, 0.2);
   scene.add(windowLight, windowLight.target);
+  const floorFill = new T.PointLight(0x9b6137, 0.28, 3.6, 2);
+  floorFill.position.set(0, 1.0, 1.45); scene.add(floorFill);
 
   // ---------- 물건 만들기 ----------
   const makers = {
@@ -187,30 +199,30 @@
       disc.rotation.x = -Math.PI / 2; disc.position.y = 0.299;
       const knob = new T.Mesh(new T.CylinderGeometry(0.008, 0.008, 0.03, 10), std(0xc9a24a, 0.3, 0.9)); knob.position.y = 0.43;
       g.add(base, stem, shade, disc, knob);
-      const light = new T.PointLight(0xffb468, 2.1, 4.2, 1.6);
+      const light = new T.PointLight(0xffb468, 0.92, 2.8, 1.7);
       light.position.set(0, 0.27, 0.02); light.castShadow = true;
       light.shadow.mapSize.set(1024, 1024); light.shadow.bias = -0.003; light.shadow.radius = 4;
       g.add(light);
-      const halo = new T.Sprite(new T.SpriteMaterial({ map: glowTex(), color: 0xffb860, transparent: true, opacity: 0.7, depthWrite: false, blending: T.AdditiveBlending }));
-      halo.scale.set(0.7, 0.7, 1); halo.position.y = 0.25; g.add(halo);
+      const halo = new T.Sprite(new T.SpriteMaterial({ map: glowTex(), color: 0xffb860, transparent: true, opacity: 0.2, depthWrite: false, blending: T.AdditiveBlending }));
+      halo.scale.set(0.38, 0.38, 1); halo.position.y = 0.25; g.add(halo);
       shadowed(g, true, false); shade.castShadow = false; stem.castShadow = false;
       g.userData.anchor = new T.Vector3(0, 0.25, 0);
       return g;
     },
     mug() {
       const g = new T.Group();
-      const cream = std(0xe9dcc3, 0.35, 0.02), dark = std(0x55544a, 0.4, 0.02);
+      const cream = std(0x211713, 0.25, 0.08), dark = std(0x0e0b0a, 0.32, 0.02);
       const outer = [[0.001, 0], [0.04, 0], [0.045, 0.02], [0.05, 0.06], [0.052, 0.1]];
       const rim = [[0.052, 0.1], [0.05, 0.102], [0.046, 0.1]];
       const inner = [[0.046, 0.1], [0.044, 0.06], [0.04, 0.02], [0.001, 0.015]];
       const lathe = (pts, m, seg = 40) => new T.Mesh(new T.LatheGeometry(pts.map((p) => new T.Vector2(p[0], p[1])), seg), Object.assign(m, { side: T.DoubleSide }));
       const lower = [[0.0011, 0.0005], [0.0405, 0.0005], [0.0455, 0.02], [0.0505, 0.0575]];
       g.add(lathe(outer, cream), lathe(rim, cream), lathe(inner, cream.clone()), lathe(lower.map((p) => [p[0] + 0.0008, p[1]]), dark));
-      const tea = new T.Mesh(new T.CircleGeometry(0.043, 32), std(0x6b3a1c, 0.2));
+      const tea = new T.Mesh(new T.CircleGeometry(0.043, 32), std(0x4c1f12, 0.22));
       tea.rotation.x = -Math.PI / 2; tea.position.y = 0.085; g.add(tea);
       const handle = new T.Mesh(new T.TorusGeometry(0.03, 0.007, 12, 24, Math.PI), cream);
       handle.position.set(0.048, 0.055, 0); handle.rotation.z = -Math.PI / 2; g.add(handle);
-      const coaster = new T.Mesh(new T.CylinderGeometry(0.065, 0.065, 0.008, 40), std(0x3a2414, 0.5));
+      const coaster = new T.Mesh(new T.CylinderGeometry(0.065, 0.065, 0.008, 40), std(0x1a1110, 0.44));
       coaster.position.y = -0.004; g.add(coaster);
       g.position.y = 0;
       // 김
@@ -224,11 +236,11 @@
     },
     plant() {
       const g = new T.Group();
-      const pot = new T.Mesh(new T.CylinderGeometry(0.075, 0.055, 0.12, 36, 1, true), std(0x3a3a3a, 0.8, 0.05, { side: T.DoubleSide }));
+      const pot = new T.Mesh(new T.CylinderGeometry(0.075, 0.055, 0.12, 36, 1, true), std(0x765033, 0.38, 0.48, { side: T.DoubleSide }));
       pot.position.y = 0.06;
-      const bottom = new T.Mesh(new T.CircleGeometry(0.055, 24), std(0x2a2a2a, 0.9)); bottom.rotation.x = -Math.PI / 2; bottom.position.y = 0.001;
+      const bottom = new T.Mesh(new T.CircleGeometry(0.055, 24), std(0x2b1c14, 0.8)); bottom.rotation.x = -Math.PI / 2; bottom.position.y = 0.001;
       const soil = new T.Mesh(new T.CircleGeometry(0.072, 32), std(0x2a1b10, 1)); soil.rotation.x = -Math.PI / 2; soil.position.y = 0.105;
-      const rim = new T.Mesh(new T.TorusGeometry(0.075, 0.006, 8, 36), std(0x4a4848, 0.7)); rim.rotation.x = Math.PI / 2; rim.position.y = 0.12;
+      const rim = new T.Mesh(new T.TorusGeometry(0.075, 0.006, 8, 36), std(0xb99a63, 0.34, 0.72)); rim.rotation.x = Math.PI / 2; rim.position.y = 0.12;
       g.add(pot, bottom, soil, rim);
       const greens = [0x7fae4e, 0x5f9140, 0x9bc15f, 0x4a7c35].map((c) => std(c, 0.55, 0, { side: T.DoubleSide }));
       for (let i = 0; i < 30; i++) {
@@ -265,6 +277,8 @@
     const g = (makers[lk.object] || makers.book)();
     const x = (i - (n - 1) / 2) * gap;
     g.position.set(x, 0.75, -0.22);
+    const objectScale = { book: 1.55, lamp: 1.45, mug: 1.9, plant: 1.45 };
+    g.scale.multiplyScalar(objectScale[lk.object] || 1.3);
     g.userData.baseY = 0.75; g.userData.hover = 0; g.userData.sel = 0;
     room.add(g);
     const mats = [];
@@ -284,6 +298,12 @@
   };
   const PL = mkPage(), PR = mkPage();
   const nb = new T.Group();
+  const leatherTex = canvasTex(320, 320, (g, w, h) => {
+    g.fillStyle = "#1a1412"; g.fillRect(0, 0, w, h);
+    for (let i = 0; i < 900; i++) { const a = rnd() * 0.09; g.fillStyle = `rgba(255,232,200,${a})`; g.fillRect(rnd() * w, rnd() * h, 1, 1); }
+  });
+  const deskPad = new T.Mesh(new T.BoxGeometry(NB.w * 2 + 0.28, 0.018, NB.d + 0.2), std(0xffffff, 0.35, 0, { map: leatherTex }));
+  deskPad.position.y = -0.014; nb.add(deskPad);
   const edge = std(0xe7dcc2, 0.9);
   const pageGeo = new T.BoxGeometry(NB.w, 0.012, NB.d);
   const pl = new T.Mesh(pageGeo, [edge, edge, std(0xffffff, 0.85, 0, { map: PL.tex }), edge, edge, edge]);
@@ -292,12 +312,15 @@
   const cover = new T.Mesh(new T.BoxGeometry(NB.w * 2 + 0.05, 0.012, NB.d + 0.03), std(0x4a2a18, 0.6));
   cover.position.y = 0.002;
   nb.add(cover, pl, pr);
+  const bookmark = new T.Mesh(new T.BoxGeometry(0.026, 0.008, 0.19), std(0x8a2f2a, 0.55));
+  bookmark.position.set(0.11, 0.028, 0.19); nb.add(bookmark);
   for (let i = 0; i < 14; i++) {      // 가운데 스프링
     const ring = new T.Mesh(new T.TorusGeometry(0.012, 0.0025, 8, 16), std(0x9a9a9a, 0.3, 0.9));
     ring.position.set(0, 0.02, -NB.d / 2 + 0.02 + (i * (NB.d - 0.04)) / 13);
     ring.rotation.y = Math.PI / 2; nb.add(ring);
   }
   nb.position.set(0, 0.775, 0.28); nb.rotation.x = 0.08;
+  nb.scale.setScalar(1.15);
   shadowed(nb); room.add(nb);
 
   function wrap(g, text, x, y, maxW, lh) {
@@ -314,7 +337,7 @@
     const gr = g.createLinearGradient(0, 0, w, 0);
     gr.addColorStop(0, "#f3e9d0"); gr.addColorStop(1, "#e8dcbc");
     g.fillStyle = gr; g.fillRect(0, 0, w, h);
-    g.strokeStyle = "rgba(90,120,160,.28)"; g.lineWidth = 2;
+    g.strokeStyle = "rgba(185,154,99,.18)"; g.lineWidth = 2;
     for (let y = 90; y < h; y += 64) { g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
     const sh = g.createLinearGradient(spineSide === "right" ? w : 0, 0, spineSide === "right" ? w - 170 : 170, 0);
     sh.addColorStop(0, "rgba(70,45,20,.4)"); sh.addColorStop(1, "rgba(70,45,20,0)");
@@ -326,26 +349,26 @@
     const L = PL.g, R = PR.g;
     L.textBaseline = "alphabetic"; R.textBaseline = "alphabetic";
     if (!c) {
-      L.fillStyle = "rgba(90,58,31,.45)"; L.font = "56px 'Nanum Pen Script', 'Gowun Batang', cursive"; L.textAlign = "center";
+      L.fillStyle = "rgba(54,37,29,.55)"; L.font = "600 44px Pretendard, SUIT, sans-serif"; L.textAlign = "center";
       L.fillText("책상 위 물건을 눌러 보세요", 460, 390);
       L.textAlign = "left";
     } else {
       L.textAlign = "left";
-      L.fillStyle = "#8a5a2b"; L.font = "58px 'Nanum Pen Script', 'Gowun Batang', cursive";
-      L.fillText("만든 선생님 · " + c.teacher, 80, 120);
-      L.fillStyle = "#3a2616"; L.font = "700 88px 'Gowun Batang', serif";
+      L.fillStyle = "#8a5a2b"; L.font = "600 42px Pretendard, SUIT, sans-serif";
+      L.fillText("고요한 나의 책상", 80, 120);
+      L.fillStyle = "#201713"; L.font = "700 82px Pretendard, SUIT, sans-serif";
       let y = wrap(L, c.name, 80, 235, 760, 104);
-      L.font = "50px 'Gowun Batang', serif"; L.fillStyle = "#4a3320";
-      wrap(L, c.desc, 80, y + 24, 760, 76);
-      R.textAlign = "left"; R.fillStyle = "#5a3a1f"; R.font = "76px 'Nanum Pen Script', 'Gowun Batang', cursive";
+      L.font = "48px Pretendard, SUIT, sans-serif"; L.fillStyle = "#4a3320";
+      wrap(L, c.desc, 80, y + 24, 760, 72);
+      R.textAlign = "left"; R.fillStyle = "#5a3a1f"; R.font = "600 58px Pretendard, SUIT, sans-serif";
       R.fillText("준비됐나요?", 150, 190);
       const soon = !c.url;
       const gr = R.createLinearGradient(0, BTN.y, 0, BTN.y + BTN.h);
       gr.addColorStop(0, soon ? "#cdbf9f" : "#e9a64a"); gr.addColorStop(1, soon ? "#a99a78" : "#c47a22");
       R.fillStyle = soon ? "#6e6248" : "#7e4a12"; R.beginPath(); R.roundRect ? R.roundRect(BTN.x + 40, BTN.y + 10, BTN.w, BTN.h, 75) : R.rect(BTN.x + 40, BTN.y + 10, BTN.w, BTN.h); R.fill();
       R.fillStyle = gr; R.beginPath(); R.roundRect ? R.roundRect(BTN.x + 40, BTN.y, BTN.w, BTN.h, 75) : R.rect(BTN.x + 40, BTN.y, BTN.w, BTN.h); R.fill();
-      R.fillStyle = "#2c1707"; R.font = "700 70px 'Gowun Batang', serif"; R.textAlign = "center";
-      R.fillText(soon ? "곧 열려요 🌙" : "열어 보기 →", BTN.x + 40 + BTN.w / 2, BTN.y + 98);
+      R.fillStyle = "#2c1707"; R.font = "700 58px Pretendard, SUIT, sans-serif"; R.textAlign = "center";
+      R.fillText(soon ? "곧 열려요" : "열어 보기 →", BTN.x + 40 + BTN.w / 2, BTN.y + 94);
     }
     PL.tex.needsUpdate = PR.tex.needsUpdate = true;
     pageUrl = c ? c.url || "" : "";
@@ -355,28 +378,40 @@
 
   // ---------- 의자 (뒤에서 본 모습) ----------
   const chair = new T.Group();
-  const cw = std(0x4a2a13, 0.55);
-  const knit = canvasTex(256, 256, (g, w, h) => {
-    g.fillStyle = "#b9ae9b"; g.fillRect(0, 0, w, h);
-    g.strokeStyle = "rgba(60,45,30,.35)"; g.lineWidth = 2;
-    for (let y = 0; y < h; y += 10) { g.beginPath(); for (let x = 0; x <= w; x += 10) g.quadraticCurveTo(x + 2.5, y - 4, x + 5, y); g.stroke(); }
+  const cw = std(0x211611, 0.42);
+  const leather = canvasTex(256, 256, (g, w, h) => {
+    g.fillStyle = "#181110"; g.fillRect(0, 0, w, h);
+    for (let i = 0; i < 1200; i++) { g.fillStyle = `rgba(230,205,175,${rnd() * 0.07})`; g.fillRect(rnd() * w, rnd() * h, 1, 1); }
   });
   const add = (geo, mat, x, y, z) => { const m = new T.Mesh(geo, mat); m.position.set(x, y, z); chair.add(m); return m; };
   [[-0.22, -0.22], [0.22, -0.22], [-0.22, 0.22], [0.22, 0.22]].forEach(([x, z]) => add(new T.BoxGeometry(0.04, 0.46, 0.04), cw, x, 0.23, z));
   add(new T.BoxGeometry(0.5, 0.04, 0.5), cw, 0, 0.44, 0);
-  const cushion = add(new T.BoxGeometry(0.46, 0.06, 0.46), std(0xffffff, 1, 0, { map: knit }), 0, 0.49, 0);
-  [-0.22, 0.22].forEach((x) => add(new T.BoxGeometry(0.04, 0.52, 0.04), cw, x, 0.72, 0.22));
-  add(new T.BoxGeometry(0.5, 0.08, 0.05), cw, 0, 0.98, 0.22);
-  [-0.12, -0.04, 0.04, 0.12].forEach((x) => add(new T.BoxGeometry(0.035, 0.3, 0.025), cw, x, 0.76, 0.22));
+  const cushion = add(new T.BoxGeometry(0.46, 0.06, 0.46), std(0xffffff, 0.32, 0, { map: leather }), 0, 0.49, 0);
+  [-0.22, 0.22].forEach((x) => add(new T.BoxGeometry(0.04, 0.52, 0.04), cw, x, 0.72, -0.03));
+  add(new T.BoxGeometry(0.5, 0.08, 0.05), cw, 0, 0.98, -0.03);
+  [-0.12, -0.04, 0.04, 0.12].forEach((x) => add(new T.BoxGeometry(0.035, 0.3, 0.025), cw, x, 0.76, -0.03));
+  const backWidth = 0.58, backHeight = 0.46, backRadius = 0.065;
+  const backShape = new T.Shape();
+  backShape.moveTo(-backWidth / 2 + backRadius, -backHeight / 2);
+  backShape.lineTo(backWidth / 2 - backRadius, -backHeight / 2);
+  backShape.quadraticCurveTo(backWidth / 2, -backHeight / 2, backWidth / 2, -backHeight / 2 + backRadius);
+  backShape.lineTo(backWidth / 2, backHeight / 2 - backRadius);
+  backShape.quadraticCurveTo(backWidth / 2, backHeight / 2, backWidth / 2 - backRadius, backHeight / 2);
+  backShape.lineTo(-backWidth / 2 + backRadius, backHeight / 2);
+  backShape.quadraticCurveTo(-backWidth / 2, backHeight / 2, -backWidth / 2, backHeight / 2 - backRadius);
+  backShape.lineTo(-backWidth / 2, -backHeight / 2 + backRadius);
+  backShape.quadraticCurveTo(-backWidth / 2, -backHeight / 2, -backWidth / 2 + backRadius, -backHeight / 2);
+  const paddedBack = add(new T.ExtrudeGeometry(backShape, { depth: 0.09, bevelEnabled: true, bevelSegments: 3, bevelSize: 0.014, bevelThickness: 0.014, curveSegments: 16 }), std(0xffffff, 0.3, 0, { map: leather }), 0, 0.77, 0.3);
   shadowed(chair);
-  chair.position.set(0, 0, 0.95);
+  chair.position.set(0, -0.12, 1.12);
   room.add(chair);
   const chairMats = []; chair.traverse((o) => { if (o.isMesh) { o.material = o.material.clone(); o.material.transparent = true; chairMats.push(o.material); } });
 
   // ---------- 카메라 ----------
-  const camA = new T.Vector3(0, 1.38, 2.75), lookA = new T.Vector3(0, 0.85, 0);
+  const camA = new T.Vector3(0, 1.48, 3.15), lookA = new T.Vector3(0, 0.98, -0.02);
   const camB = new T.Vector3(0, 1.5, 1.75), lookB = new T.Vector3(0, 0.72, -0.2);
   const cam = camA.clone(), look = lookA.clone();
+  const reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   let seatP = 0, seating = false, seatT0 = 0, mx = 0, my = 0, ox = 0, oy = 0;
   const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
@@ -470,7 +505,7 @@
 
   // ---------- 밖으로 내보내는 기능 ----------
   window.Desk = {
-    sit() { if (!seating) { seating = true; seatT0 = performance.now(); } },
+    sit() { if (!seating) { seating = true; seatP = reducedMotion ? 1 : 0; seatT0 = performance.now(); } },
     hover(i, on) { if (items[i]) items[i].userData.hover = on ? 1 : 0; },
     setPage,
     select(i) { items.forEach((g, k) => (g.userData.sel = k === i ? 1 : 0)); },

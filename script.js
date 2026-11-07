@@ -1,193 +1,298 @@
-// 사진 크기 (desk.jpg)
-const IMG_W = 1586, IMG_H = 992;
-
-// 사진 속 누르는 영역 [왼쪽, 위, 오른쪽, 아래] (사진 픽셀 기준) — links.js 순서와 같아요
-const SPOTS = [
-  { label: "책",       box: [60, 445, 400, 665] },
-  { label: "펼친 공책", box: [620, 455, 1000, 675] },
-  { label: "찻잔",     box: [1095, 455, 1265, 655] },
-  { label: "화분",     box: [1300, 300, 1580, 630] }
-];
-
+// ---------- 책상 위 물건 버튼 (3D 위에 얹는 큰 버튼) ----------
+// 물건을 누르면 책상 위 공책(3D)에 글이 써져요. 공책 글은 scene.js가 그려요.
 const links = window.DESK_LINKS || [];
-const $ = (id) => document.getElementById(id);
-const world = $("world"), spotsBox = $("spots"), card = $("card");
+const objectsBox = document.getElementById("objects");
+const entryGate = document.getElementById("entryGate");
+const enterButton = document.getElementById("enterBtn");
+const skipEntryButton = document.getElementById("skipEntryBtn");
+let entryRevealing = false;
 
-function place(el, box) {
-  el.style.left = (box[0] / IMG_W) * 100 + "%";
-  el.style.top = (box[1] / IMG_H) * 100 + "%";
-  el.style.width = ((box[2] - box[0]) / IMG_W) * 100 + "%";
-  el.style.height = ((box[3] - box[1]) / IMG_H) * 100 + "%";
+function revealStudy(skipMotion = false) {
+  if (entryRevealing || entryGate.getAttribute("aria-hidden") === "true") return;
+  entryRevealing = true;
+  enterButton.disabled = true;
+  skipEntryButton.disabled = true;
+  const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const finish = () => {
+    entryGate.setAttribute("aria-hidden", "true");
+    entryGate.inert = true;
+    [objectsBox, document.querySelector(".stage"), document.getElementById("introUi")].forEach((node) => { node.inert = false; });
+    document.getElementById("sitBtn").focus({ preventScroll: true });
+    window.setTimeout(() => window.openBookmark && window.openBookmark(), 700);   // 들어오면 책갈피 알림창
+  };
+  document.body.classList.add("doors-open");
+  if (skipMotion || reduced) finish();
+  else window.setTimeout(finish, 1420);
 }
-place($("sitBtn"), [627, 866, 957, 938]);
-place($("helpBtn"), [1360, 12, 1480, 52]);
+enterButton.addEventListener("click", () => revealStudy(false));
+skipEntryButton.addEventListener("click", () => revealStudy(true));
+requestAnimationFrame(() => enterButton.focus({ preventScroll: true }));
+entryGate.addEventListener("keydown", (event) => {
+  if (event.key !== "Tab") return;
+  const controls = [enterButton, skipEntryButton];
+  const first = controls[0], last = controls[controls.length - 1];
+  if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+  else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+});
 
-// ---------- 문 열고 들어가기 ----------
-const entry = $("entry");
-world.inert = true;
-let entered = false;
-function openDoor() {
-  if (entered) return;
-  entered = true;
-  // 한 번에 이어져요: 문이 열리는 동안 바로 안으로 다가가서 방에 도착
-  entry.classList.add("opening");                          // 문이 열려요
-  setTimeout(() => entry.classList.add("entering"), 450);  // 곧바로 안으로 다가가요
-  setTimeout(() => {                                       // 방이 나타나요
-    entry.classList.add("gone");
-    document.body.classList.remove("door");
-    world.inert = false;
-  }, 1800);
-  setTimeout(() => { entry.hidden = true; }, 2900);
-  setTimeout(showBti, 3300);                               // 도착하면 양피지 알림
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text) e.textContent = text;
+  return e;
 }
-$("doorBtn").addEventListener("click", openDoor);
-$("openBtn").addEventListener("click", openDoor);
+
+function buildObjects() {
+  links.forEach((item, i) => {
+    const b = el("button", "obj");
+    b.type = "button";
+    b.dataset.index = i;
+    b.setAttribute("aria-pressed", "false");
+    b.setAttribute("aria-label", item.name);
+    b.appendChild(el("span", "obj-label", item.name));
+    b.addEventListener("mouseenter", () => window.Desk && Desk.hover(i, true));
+    b.addEventListener("mouseleave", () => window.Desk && Desk.hover(i, false));
+    b.addEventListener("focus", () => window.Desk && Desk.hover(i, true));
+    b.addEventListener("blur", () => window.Desk && Desk.hover(i, false));
+    b.addEventListener("click", () => {
+      objectsBox.querySelectorAll(".obj").forEach((o) => {
+        o.classList.remove("on");
+        o.setAttribute("aria-pressed", "false");
+      });
+      b.classList.add("on");
+      b.setAttribute("aria-pressed", "true");
+      if (window.Desk) { Desk.select(i); Desk.setPage(item); }
+      if (window.DeskPanel) DeskPanel.open(i, b);
+    });
+    objectsBox.appendChild(b);
+  });
+}
 
 // ---------- 의자에 앉기 ----------
-let seated = false;
-function sit() {
-  if (seated) return;
-  seated = true;
+document.getElementById("sitBtn").addEventListener("click", () => {
   document.body.classList.remove("intro");
   document.body.classList.add("seated");
-}
-$("sitBtn").addEventListener("click", sit);
+  window.Desk && Desk.sit();
+  setTimeout(() => {
+    const first = objectsBox.querySelector(".obj");
+    if (first) first.focus({ preventScroll: true });
+  }, 2900);
+});
 
-// ---------- 물건 누르기 → 카드 ----------
-let current = -1;
-const spotEls = [];
-SPOTS.forEach((s, i) => {
-  const item = links[i];
-  if (!item) return;
-  const b = document.createElement("button");
-  b.type = "button";
-  b.className = "spot";
-  b.setAttribute("aria-label", item.name + " (" + s.label + ")");
-  place(b, s.box);
-  b.addEventListener("click", () => {
-    const wait = seated ? 0 : 900;
-    sit();
-    setTimeout(() => openCard(i), wait);
+buildObjects();
+
+// ---------- 도구 패널: 실제 물건의 상세 활동 메뉴 ----------
+(() => {
+  const panel = document.getElementById("toolPanel");
+  const hero = document.getElementById("toolHero");
+  const content = document.getElementById("toolContent");
+  const close = panel.querySelector(".tool-panel__close");
+  const objects = document.getElementById("objects");
+  const stage = document.querySelector(".stage");
+  const intro = document.getElementById("introUi");
+  let selected = -1;
+  let lastTrigger = null;
+  let timerId = 0;
+  let seconds = 60;
+
+  const toolMeta = [
+    { kicker: "CLASSIC READING", title: "고전 읽기", lead: "한 권의 고전과 나의 오늘을 조용히 연결해 봐요.", image: "assets/book-little-prince-hero.png" },
+    { kicker: "TODAY'S FEELING", title: "오늘의 마음", lead: "지금의 마음을 하나 고르고, 잠시 그 감정 곁에 있어 봐요.", image: "assets/tool-mood.png" },
+    { kicker: "A SMALL PAUSE", title: "쉬어가기", lead: "눈과 어깨를 쉬게 하는 짧은 1분을 시작해요.", image: "assets/tool-rest.png" },
+    { kicker: "ONE LINE JOURNAL", title: "한 줄 쓰기", lead: "오늘의 나를 한 줄로 남기면, 작은 생각도 자랄 자리를 얻어요.", image: "assets/tool-journal.png" }
+  ];
+
+  const escapeHtml = (value) => String(value).replace(/[&<>\"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" })[char]);
+  const current = () => (window.DESK_LINKS || [])[selected] || {};
+  const action = () => {
+    const item = current();
+    return item.url
+      ? `<a class="tool-primary" href="${escapeHtml(item.url)}" target="_blank" rel="noopener">활동 열어 보기 <span aria-hidden="true">↗</span></a>`
+      : `<button class="tool-primary tool-disabled" type="button" disabled>외부 활동은 곧 열려요</button>`;
+  };
+  const deskButton = () => `<button class="tool-secondary" type="button" data-close-tool>책상으로 돌아가기</button>`;
+
+  function setInert(on) {
+    [objects, stage, intro].forEach((node) => { if (node) node.inert = on; });
+  }
+  function closePanel() {
+    clearInterval(timerId); timerId = 0;
+    panel.setAttribute("aria-hidden", "true");
+    panel.inert = true;
+    document.body.classList.remove("tool-open");
+    setInert(false);
+    if (lastTrigger) lastTrigger.focus({ preventScroll: true });
+  }
+  function bindCommon() {
+    content.querySelectorAll("[data-close-tool]").forEach((button) => button.addEventListener("click", closePanel));
+  }
+  function focusPanelHeading() {
+    const heading = content.querySelector("#toolTitle");
+    if (!heading) return;
+    heading.tabIndex = -1;
+    requestAnimationFrame(() => heading.focus({ preventScroll: true }));
+  }
+  function renderBookList() {
+    panel.dataset.view = "book-list";
+    content.innerHTML = `
+      <p class="tool-kicker">${toolMeta[0].kicker}</p>
+      <h2 class="tool-title" id="toolTitle">${toolMeta[0].title}</h2>
+      <p class="tool-lead">${toolMeta[0].lead}</p>
+      <button class="book-choice" type="button" id="littlePrinceChoice">
+        <img src="assets/book-little-prince-cover.png" alt="어린 왕자 표지">
+        <span><strong>어린 왕자</strong><span>앙투안 드 생텍쥐페리<br>관계와 책임을 천천히 읽는 시간</span></span>
+      </button>
+      <div class="tool-actions">${action()}${deskButton()}</div>`;
+    document.getElementById("littlePrinceChoice").addEventListener("click", renderBookDetail);
+    bindCommon();
+    focusPanelHeading();
+  }
+  function renderBookDetail() {
+    panel.dataset.view = "book-detail";
+    hero.style.backgroundImage = "url('assets/book-little-prince-hero.png')";
+    content.innerHTML = `
+      <p class="tool-kicker">CLASSIC READING · SELECTED BOOK</p>
+      <h2 class="tool-title" id="toolTitle">어린 왕자</h2>
+      <p class="tool-lead">앙투안 드 생텍쥐페리의 이야기를 따라, ‘길들인다’는 말에 담긴 관계의 책임을 생각해 봐요.</p>
+      <section class="tool-card" aria-label="오늘의 읽기 주제"><h3>오늘의 질문</h3><p>내가 시간을 들여 돌보고 싶은 관계는 무엇인가요? 그 관계를 위해 오늘 할 수 있는 작은 일은 무엇일까요?</p></section>
+      <div class="tool-actions"><button class="tool-secondary" type="button" id="backToBooks">책 선택으로 돌아가기</button>${action()}${deskButton()}</div>`;
+    document.getElementById("backToBooks").addEventListener("click", renderBookList);
+    bindCommon();
+    focusPanelHeading();
+  }
+  function renderMood() {
+    panel.dataset.view = "mood";
+    const saved = localStorage.getItem("quiet-desk-mood") || "";
+    content.innerHTML = `
+      <p class="tool-kicker">${toolMeta[1].kicker}</p><h2 class="tool-title" id="toolTitle">${toolMeta[1].title}</h2><p class="tool-lead">${toolMeta[1].lead}</p>
+      <section class="tool-card"><h3>지금 가장 가까운 마음</h3><div class="mood-grid" role="group" aria-label="오늘의 마음 선택">
+        ${["차분해요", "조금 복잡해요", "힘을 내고 싶어요"].map((mood) => `<button class="mood-choice" type="button" data-mood="${mood}" aria-pressed="${saved === mood}">${mood}</button>`).join("")}
+      </div><p class="tool-feedback" id="moodFeedback">${saved ? `오늘은 ‘${saved}’에 가까워요.` : "고른 마음은 이 기기에만 잠시 남아요."}</p></section>
+      <div class="tool-actions">${action()}${deskButton()}</div>`;
+    content.querySelectorAll("[data-mood]").forEach((button) => button.addEventListener("click", () => {
+      const mood = button.dataset.mood;
+      localStorage.setItem("quiet-desk-mood", mood);
+      content.querySelectorAll("[data-mood]").forEach((choice) => choice.setAttribute("aria-pressed", String(choice === button)));
+      document.getElementById("moodFeedback").textContent = `오늘은 ‘${mood}’에 가까워요.`;
+    }));
+    bindCommon();
+    focusPanelHeading();
+  }
+  function renderRest() {
+    panel.dataset.view = "rest";
+    content.innerHTML = `
+      <p class="tool-kicker">${toolMeta[2].kicker}</p><h2 class="tool-title" id="toolTitle">${toolMeta[2].title}</h2><p class="tool-lead">${toolMeta[2].lead}</p>
+      <section class="tool-card"><h3>1분 숨 고르기</h3><p class="rest-clock" id="restClock" aria-live="polite">01:00</p><p id="restGuide">어깨를 내리고, 천천히 네 번 숨을 쉬어 보세요.</p>
+      <div class="tool-actions"><button class="tool-primary" type="button" id="startRest">1분 시작</button><button class="tool-secondary" type="button" id="resetRest">다시 하기</button></div></section>
+      <div class="tool-actions">${action()}${deskButton()}</div>`;
+    const clock = document.getElementById("restClock");
+    const renderTime = () => { clock.textContent = `00:${String(seconds).padStart(2, "0")}`; };
+    document.getElementById("startRest").addEventListener("click", () => {
+      if (timerId) return;
+      document.getElementById("startRest").disabled = true;
+      timerId = window.setInterval(() => {
+        seconds -= 1; renderTime();
+        if (seconds <= 0) { clearInterval(timerId); timerId = 0; clock.textContent = "완료"; document.getElementById("restGuide").textContent = "잠깐 멈춘 것만으로도 충분해요."; }
+      }, 1000);
+    });
+    document.getElementById("resetRest").addEventListener("click", () => { clearInterval(timerId); timerId = 0; seconds = 60; renderTime(); document.getElementById("startRest").disabled = false; document.getElementById("restGuide").textContent = "어깨를 내리고, 천천히 네 번 숨을 쉬어 보세요."; });
+    bindCommon();
+    focusPanelHeading();
+  }
+  function renderJournal() {
+    panel.dataset.view = "journal";
+    const saved = localStorage.getItem("quiet-desk-journal") || "";
+    content.innerHTML = `
+      <p class="tool-kicker">${toolMeta[3].kicker}</p><h2 class="tool-title" id="toolTitle">${toolMeta[3].title}</h2><p class="tool-lead">${toolMeta[3].lead}</p>
+      <section class="tool-card"><h3>오늘의 한 줄</h3><textarea class="journal-entry" id="journalEntry" maxlength="180" placeholder="오늘의 나는…" aria-label="오늘의 한 줄 쓰기">${escapeHtml(saved)}</textarea><p class="tool-feedback" id="journalFeedback">이 기록은 이 기기에만 저장됩니다.</p>
+      <div class="tool-actions"><button class="tool-primary" type="button" id="saveJournal">책상에 남기기</button></div></section>
+      <div class="tool-actions">${action()}${deskButton()}</div>`;
+    document.getElementById("saveJournal").addEventListener("click", () => {
+      localStorage.setItem("quiet-desk-journal", document.getElementById("journalEntry").value.trim());
+      document.getElementById("journalFeedback").textContent = "한 줄을 이 기기에 남겼어요.";
+    });
+    bindCommon();
+    focusPanelHeading();
+  }
+  function render(index) {
+    clearInterval(timerId); timerId = 0; seconds = 60;
+    const meta = toolMeta[index];
+    hero.style.backgroundImage = `url('${meta.image}')`;
+    if (index === 0) return renderBookList();
+    if (index === 1) return renderMood();
+    if (index === 2) return renderRest();
+    renderJournal();
+  }
+  window.DeskPanel = {
+    open(index, trigger) {
+      selected = index; lastTrigger = trigger; render(index);
+      panel.inert = false; panel.setAttribute("aria-hidden", "false"); document.body.classList.add("tool-open"); setInert(true);
+      requestAnimationFrame(() => close.focus({ preventScroll: true }));
+    },
+    close: closePanel
+  };
+  panel.querySelectorAll("[data-close-tool]").forEach((node) => node.addEventListener("click", closePanel));
+  document.addEventListener("keydown", (event) => {
+    if (panel.getAttribute("aria-hidden") !== "false") return;
+    if (event.key === "Escape") { closePanel(); return; }
+    if (event.key !== "Tab") return;
+    const focusable = [...panel.querySelectorAll("button:not([disabled]), a[href], textarea")].filter((node) => !node.hidden);
+    if (!focusable.length) return;
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
   });
-  spotsBox.appendChild(b);
-  spotEls.push(b);
-});
+})();
 
-function openCard(i) {
-  const item = links[i];
-  current = i;
-  spotEls.forEach((e, k) => e.classList.toggle("on", k === i));
-  $("cardTag").textContent = "만든 선생님 · " + item.teacher;
-  $("cardTitle").textContent = item.name;
-  $("cardDesc").textContent = item.desc;
-  const go = $("cardGo"), soon = $("cardSoon");
-  if (item.url) { go.href = item.url; go.hidden = false; soon.hidden = true; }
-  else { go.hidden = true; soon.hidden = false; }
-  card.hidden = false;
-  document.body.classList.add("card-open");
-  requestAnimationFrame(() => card.classList.add("show"));
-}
-function closeCard() {
-  card.classList.remove("show");
-  document.body.classList.remove("card-open");
-  spotEls.forEach((e) => e.classList.remove("on"));
-  current = -1;
-  setTimeout(() => { if (current < 0) card.hidden = true; }, 350);
-}
-$("cardX").addEventListener("click", closeCard);
-document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !card.hidden) closeCard(); });
-
-// ---------- QR 코드 ----------
-let qrMade = false;
-$("qrBtn").addEventListener("click", () => {
-  const url = window.DESK_QR_URL || window.location.href;
-  if (!qrMade || $("qrUrl").textContent !== url) {
-    try {
-      const qr = qrcode(0, "M");
-      qr.addData(url);
-      qr.make();
-      $("qrBox").innerHTML = qr.createSvgTag({ cellSize: 8, margin: 3, scalable: true });
-    } catch (err) {
-      $("qrBox").textContent = "QR을 만들지 못했어요.";
+// ---------- QR 코드: 휴대폰으로 이 책상 열기 ----------
+(() => {
+  const dlg = document.getElementById("qrDlg");
+  const box = document.getElementById("qrBox");
+  const urlEl = document.getElementById("qrUrl");
+  let madeFor = "";
+  document.getElementById("qrBtn").addEventListener("click", () => {
+    const url = window.DESK_QR_URL || window.location.href;   // 비워두면 지금 열린 주소
+    if (madeFor !== url) {
+      try {
+        const qr = qrcode(0, "M");
+        qr.addData(url);
+        qr.make();
+        box.innerHTML = qr.createSvgTag({ cellSize: 8, margin: 3, scalable: true });
+      } catch (err) {
+        box.textContent = "QR을 만들지 못했어요.";
+      }
+      urlEl.textContent = url;
+      madeFor = url;
     }
-    $("qrUrl").textContent = url;
-    qrMade = true;
+    dlg.showModal();
+  });
+  document.getElementById("qrClose").addEventListener("click", () => dlg.close());
+  dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });   // 바깥을 누르면 닫기
+})();
+
+// ---------- 책갈피 알림창 → 추천 도서(항상 어린 왕자) ----------
+(() => {
+  const bm = document.getElementById("bmDlg"), rec = document.getElementById("recDlg");
+  const link = document.getElementById("bmLink"), soon = document.getElementById("bmSoon");
+  const R = window.BOOK_RESULT || {};
+  if (R.image) document.getElementById("recImg").src = R.image;
+  if (R.title) document.getElementById("recTitle").textContent = R.title;
+  if (R.author) document.getElementById("recAuthor").textContent = R.author;
+
+  function openBookmark() {
+    if (rec.open) return;
+    const url = window.BOOKMARK_URL;
+    if (url) { link.href = url; link.hidden = false; soon.hidden = true; }
+    else { link.hidden = true; soon.hidden = false; }
+    if (!bm.open) bm.showModal();
   }
-  $("qrDlg").showModal();
-});
-$("qrClose").addEventListener("click", () => $("qrDlg").close());
+  window.openBookmark = openBookmark;
+  const showResult = () => { bm.close(); if (!rec.open) rec.showModal(); };
 
-// ---------- 사용 안내 ----------
-$("helpBtn").addEventListener("click", () => $("helpDlg").showModal());
-$("helpClose").addEventListener("click", () => $("helpDlg").close());
-
-// 창 바깥(어두운 곳)을 누르면 닫기
-["qrDlg", "helpDlg"].forEach((id) => {
-  const d = $(id);
-  d.addEventListener("click", (e) => { if (e.target === d) d.close(); });
-});
-
-// ---------- 북BTI: 양피지 알림 → (설문) → 결과는 무조건 어린 왕자 ----------
-const bti = $("bti"), rec = $("rec");
-const RESULT = window.BOOK_RESULT || { title: "어린 왕자", reviewUrl: "" };
-
-function toast(msg) {
-  const t = $("toast");
-  t.textContent = msg;
-  t.hidden = false;
-  clearTimeout(toast._t);
-  toast._t = setTimeout(() => { t.hidden = true; }, 2600);
-}
-
-function showBti() {
-  $("btiStep1").hidden = false;
-  $("btiStep2").hidden = true;
-  bti.hidden = false;
-  requestAnimationFrame(() => requestAnimationFrame(() => bti.classList.add("show")));
-  setTimeout(() => $("btiStart").focus({ preventScroll: true }), 1000);
-}
-function closeBti() {
-  bti.classList.remove("show");
-  setTimeout(() => { bti.hidden = true; }, 500);
-}
-
-function showResult() {
-  closeBti();
-  const last = RESULT.title.charCodeAt(RESULT.title.length - 1);
-  const josa = (last - 0xac00) % 28 === 0 ? "를" : "을";   // 받침이 없으면 '를', 있으면 '을'
-  $("recFriends").textContent = "「" + RESULT.title + "」" + josa + " 먼저 만난 친구들의 이야기 →";
-  rec.hidden = false;
-  requestAnimationFrame(() => requestAnimationFrame(() => rec.classList.add("show")));
-  setTimeout(() => $("recFriends").focus({ preventScroll: true }), 1400);
-}
-function closeResult() {
-  rec.classList.remove("show");
-  setTimeout(() => { rec.hidden = true; }, 800);
-}
-
-$("btiStart").addEventListener("click", () => {
-  const url = window.BOOKBTI_URL;
-  if (url) {                              // 설문 링크가 있으면 새 창으로 열고, 돌아오면 결과 보기
-    window.open(url, "_blank", "noopener");
-    $("btiStep1").hidden = true;
-    $("btiStep2").hidden = false;
-    setTimeout(() => $("btiResult").focus({ preventScroll: true }), 50);
-  } else {
-    showResult();                         // 링크가 아직 없으면 바로 결과
-  }
-});
-$("btiAgain").addEventListener("click", () => { if (window.BOOKBTI_URL) window.open(window.BOOKBTI_URL, "_blank", "noopener"); });
-$("btiResult").addEventListener("click", showResult);
-$("btiLater").addEventListener("click", closeBti);
-$("btiBtn").addEventListener("click", showBti);
-
-$("recFriends").addEventListener("click", () => {
-  if (RESULT.reviewUrl) window.open(RESULT.reviewUrl, "_blank", "noopener");
-  else toast("친구들의 서평을 준비 중이에요 🌙");
-});
-$("recClose").addEventListener("click", closeResult);
-document.addEventListener("keydown", (e) => {
-  if (e.key !== "Escape") return;
-  if (!rec.hidden) closeResult();
-  else if (!bti.hidden) closeBti();
-});
+  document.getElementById("bmResult").addEventListener("click", showResult);
+  document.getElementById("bmLater").addEventListener("click", () => bm.close());
+  document.getElementById("recClose").addEventListener("click", () => rec.close());
+  document.getElementById("bmBtn").addEventListener("click", openBookmark);
+  // 어두운 바깥을 누르면 닫기
+  [bm].forEach((d) => d.addEventListener("click", (e) => { if (e.target === d) d.close(); }));
+})();

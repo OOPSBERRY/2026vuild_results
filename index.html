@@ -4,130 +4,97 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>위로가 필요한 날 : 고요한 나의 책상</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="intro door">
+<body class="intro">
 
-  <!-- 화면 양옆 빈 곳을 채우는 흐린 배경 -->
-  <div class="backdrop" aria-hidden="true"></div>
+  <!-- 3D 방 -->
+  <canvas id="scene" aria-hidden="true"></canvas>
+  <div class="vignette" aria-hidden="true"></div>
 
-  <!-- 책상 사진 + 그 위에 얹힌 누르는 영역들 -->
-  <div class="world" id="world">
-    <img class="bg" src="desk.jpg" alt="따뜻한 불빛이 켜진 밤 서재. 책상 위에 책, 스탠드, 펼친 공책, 찻잔, 화분이 놓여 있어요.">
-    <div class="spots" id="spots"></div>
-    <button class="spot spot-sit" id="sitBtn" type="button" aria-label="의자에 앉기"></button>
-    <button class="spot spot-help" id="helpBtn" type="button" aria-label="사용 안내"></button>
-  </div>
-  <div class="floor-dark" aria-hidden="true"></div>
-
-  <!-- 입장 화면: 문을 열고 들어가요 -->
-  <div class="entry" id="entry">
-    <div class="entry-light" aria-hidden="true"></div>
-    <div class="door-wrap" id="doorWrap">
-      <div class="peek" aria-hidden="true"></div>
-      <button class="door-panel" id="doorBtn" type="button" aria-label="문 열고 들어가기">
-        <img src="door-panel.jpg" alt="" draggable="false">
-        <span class="handle-glow" aria-hidden="true"></span>
-        <span class="plate">
-          <i></i><i></i><i></i><i></i>
-          <span class="plate-title">다독다독</span>
-          <span class="plate-quote">“많이 읽으라고 하지 않아요.<br>다독여 줄게요.”</span>
-        </span>
-      </button>
-      <img class="door-side door-left" src="door-left.jpg" alt="" draggable="false">
-      <img class="door-side door-right" src="door-right.jpg" alt="" draggable="false">
+  <section class="entry-gate" id="entryGate" aria-labelledby="entryTitle" aria-modal="true" role="dialog">
+    <div class="entry-gate__doors" aria-hidden="true">
+      <div class="entry-gate__door entry-gate__door--left"></div>
+      <div class="entry-gate__door entry-gate__door--right"></div>
+      <div class="entry-gate__glow"></div>
     </div>
-    <button class="pill open-btn" id="openBtn" type="button">문 열고 들어가기 →</button>
-  </div>
-
-  <!-- 처음 페이지 QR 버튼 -->
-  <button class="pill qr-btn" id="qrBtn" type="button">
-    <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path fill="currentColor" d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm10-2h2v2h-2v-2zm-2 2h2v2h-2v-2zm4 0h2v2h-2v-2zm-2 2h2v2h-2v-2zm2 2h2v2h-2v-2zm-4 0h2v2h-2v-2z"/></svg>
-    QR 코드
-  </button>
-
-  <button class="pill bti-btn" id="btiBtn" type="button">📜 북BTI</button>
-
-  <!-- 물건을 누르면 나오는 설명 카드 -->
-  <aside class="card" id="card" hidden aria-live="polite">
-    <button class="card-x" id="cardX" type="button" aria-label="닫기">✕</button>
-    <p class="card-tag" id="cardTag"></p>
-    <h2 id="cardTitle"></h2>
-    <p class="card-desc" id="cardDesc"></p>
-    <div class="card-actions">
-      <a class="pill pill-go" id="cardGo" target="_blank" rel="noopener">열어 보기 →</a>
-      <span class="pill pill-soon" id="cardSoon">곧 열려요 🌙</span>
+    <div class="entry-gate__content">
+      <p class="entry-gate__eyebrow">A QUIET STUDY</p>
+      <h2 id="entryTitle">오늘의 생각이<br>머물 자리에</h2>
+      <p>문을 열고, 나만의 책상으로 들어가 보세요.</p>
+      <button class="entry-gate__enter" id="enterBtn" type="button">입장하기 <span aria-hidden="true">→</span></button>
+      <button class="entry-gate__skip" id="skipEntryBtn" type="button">바로 둘러보기</button>
     </div>
-  </aside>
-
-  <!-- 양피지 모양을 찢어진 가장자리로 만드는 재료 -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-    <filter id="rough" x="-6%" y="-6%" width="112%" height="112%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="4" seed="4" result="n"/>
-      <feDisplacementMap in="SourceGraphic" in2="n" scale="18" xChannelSelector="R" yChannelSelector="G"/>
-    </filter>
-  </svg>
-
-  <!-- 북BTI 알림 (양피지) -->
-  <div class="bti" id="bti" hidden role="dialog" aria-modal="true" aria-labelledby="btiTitle">
-    <div class="parchment">
-      <div class="parch-bg" aria-hidden="true"></div>
-      <div class="parch-body">
-        <div id="btiStep1">
-          <p class="parch-kicker">문 너머에서 온 편지</p>
-          <h2 id="btiTitle">당신의 북BTI는?</h2>
-          <p class="parch-text">나는 어떤 책을 좋아하는 사람일까요?<br>몇 가지 질문에 답하면, 나에게 꼭 맞는 책을 건네 드려요.</p>
-          <button class="ink-btn" id="btiStart" type="button">북BTI 시작하기</button>
-          <button class="ink-link" id="btiLater" type="button">나중에 할래요</button>
-        </div>
-        <div id="btiStep2" hidden>
-          <p class="parch-kicker">잠깐 쉬어도 좋아요</p>
-          <h2>설문을 마쳤나요?</h2>
-          <p class="parch-text">마음의 준비가 되면,<br>당신에게 어울리는 책을 보여 드릴게요.</p>
-          <button class="ink-btn" id="btiResult" type="button">결과 보기 →</button>
-          <button class="ink-link" id="btiAgain" type="button">설문 다시 열기</button>
-        </div>
-        <span class="seal" aria-hidden="true">B</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- 북BTI 결과: 어린 왕자 -->
-  <section class="rec" id="rec" hidden aria-label="북BTI 결과">
-    <p class="rec-kicker">당신의 북BTI 추천 도서</p>
-    <div class="rec-stage">
-      <img id="recImg" src="bookbti-result.jpg" alt="북BTI 결과 어린 왕자. 작은 별 위에 앉은 어린 왕자와 유리 덮개 속 장미가 그려진 가죽 표지 책">
-      <button class="pill rec-friends" id="recFriends" type="button"></button>
-    </div>
-    <button class="pill rec-close" id="recClose" type="button">책상으로 가기</button>
   </section>
 
-  <div class="toast" id="toast" role="status" hidden></div>
+  <section class="objects" id="objects" aria-label="책상 위 물건들" inert>
+    <a id="nbOpen" class="nb-open" target="_blank" rel="noopener" aria-label="이 프로그램 열어 보기"></a>
+  </section>
 
-  <!-- QR 창 -->
-  <dialog class="modal" id="qrDlg">
-    <h2>휴대폰으로 찍어 보세요</h2>
-    <div class="qr-box" id="qrBox"></div>
-    <p class="qr-url" id="qrUrl"></p>
-    <button class="pill" id="qrClose" type="button">닫기</button>
+  <main class="stage" inert>
+    <header class="title">
+      <p class="title-small">A QUIET STUDY · FOR SLOW THOUGHTS</p>
+      <h1>고요한 나의 책상</h1>
+      <p class="title-note">책상 위 물건을 골라, 오늘의 생각을 천천히 펼쳐 보세요.</p>
+    </header>
+
+  </main>
+
+  <div class="intro-ui" id="introUi" inert>
+    <button class="sit-btn" id="sitBtn" type="button"><span>의자에 앉기</span><span aria-hidden="true">→</span></button>
+  </div>
+
+  <aside class="tool-panel" id="toolPanel" aria-hidden="true" aria-labelledby="toolTitle" role="dialog" aria-modal="true" inert>
+    <div class="tool-panel__backdrop" data-close-tool></div>
+    <section class="tool-panel__sheet">
+      <button class="tool-panel__close" type="button" data-close-tool aria-label="책상으로 돌아가기">×</button>
+      <div class="tool-panel__hero" id="toolHero" aria-hidden="true"></div>
+      <div class="tool-panel__content" id="toolContent"></div>
+    </section>
+  </aside>
+
+  <!-- 책갈피 알림창: 문을 열고 들어오면 떠요 -->
+  <dialog class="bm-dialog" id="bmDlg" aria-labelledby="bmTitle">
+    <p class="bm-kicker">BOOKMARK</p>
+    <h2 id="bmTitle">당신의 책갈피는 무엇인가요?</h2>
+    <p class="bm-text">책갈피를 고르면, 오늘 당신에게 건네고 싶은 책을 알려 드려요.</p>
+    <a class="bm-link" id="bmLink" target="_blank" rel="noopener" hidden>책갈피 고르러 가기 <span aria-hidden="true">↗</span></a>
+    <span class="bm-link bm-link--soon" id="bmSoon">책갈피 링크는 곧 열려요</span>
+    <button class="bm-primary" id="bmResult" type="button">추천 도서 보기 →</button>
+    <button class="bm-later" id="bmLater" type="button">나중에 할래요</button>
   </dialog>
 
-  <!-- 사용 안내 창 -->
-  <dialog class="modal" id="helpDlg">
-    <h2>이렇게 써 보세요</h2>
-    <ol class="steps">
-      <li><b>1</b> 아래의 <em>의자에 앉기</em>를 눌러요.</li>
-      <li><b>2</b> 책상 위 물건을 하나 눌러요.</li>
-      <li><b>3</b> 설명을 읽고 <em>열어 보기</em>를 눌러요.</li>
-    </ol>
-    <button class="pill" id="helpClose" type="button">알겠어요</button>
+  <!-- 추천 도서: 어떤 책갈피를 골라도 어린 왕자 -->
+  <dialog class="rec-dialog" id="recDlg" aria-labelledby="recTitle">
+    <div class="rec-wrap">
+      <img class="rec-cover" id="recImg" src="assets/little-prince-recommend.jpg" alt="어린 왕자 표지. 작은 별 위에 앉은 어린 왕자와 유리 덮개 속 붉은 장미가 그려진 갈색 가죽 표지">
+      <div class="rec-info">
+        <p class="bm-kicker">오늘 당신에게 건네는 책</p>
+        <h2 id="recTitle">어린 왕자</h2>
+        <p class="rec-author" id="recAuthor">앙투안 드 생텍쥐페리</p>
+        <p class="rec-note">어떤 책갈피를 고르셨어도, 오늘 당신에게 가장 먼저 건네고 싶은 책이에요.</p>
+        <button class="bm-primary" id="recClose" type="button">책상으로 가기</button>
+      </div>
+    </div>
+  </dialog>
+  <button class="bm-btn" id="bmBtn" type="button">책갈피</button>
+
+  <!-- QR 버튼: 입장 화면(문)에서도 보여요 -->
+  <button class="qr-btn" id="qrBtn" type="button">
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm10-2h2v2h-2v-2zm-2 2h2v2h-2v-2zm4 0h2v2h-2v-2zm-2 2h2v2h-2v-2zm2 2h2v2h-2v-2zm-4 0h2v2h-2v-2z"/></svg>
+    <span>QR 코드</span>
+  </button>
+  <dialog class="qr-dialog" id="qrDlg" aria-labelledby="qrTitle">
+    <h2 id="qrTitle">휴대폰으로 찍어 보세요</h2>
+    <div class="qr-box" id="qrBox"></div>
+    <p class="qr-url" id="qrUrl"></p>
+    <button class="qr-close" id="qrClose" type="button">닫기</button>
   </dialog>
 
   <script src="qrcode.min.js"></script>
+  <script src="three.min.js"></script>
   <script src="links.js"></script>
+  <script src="scene.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
